@@ -15,9 +15,10 @@
     ],
 
     "require": {
-        "php":                   ">=5.3.1",
-        "symfony/browser-kit":   ">=2.0.0,<2.2.0-dev",
-        "symfony/dom-crawler":   ">=2.0.0,<2.2.0-dev"
+        "php":                  ">=5.3.1",
+        "behat/mink":           ">=1.4.0beta5,<1.4.x-dev",
+        "symfony/browser-kit":  ">=2.0.0,<2.2.0-dev",
+        "symfony/dom-crawler":  ">=2.0.0,<2.2.0-dev"
     },
 
     "autoload": {

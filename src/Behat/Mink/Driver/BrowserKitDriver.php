@@ -823,9 +823,7 @@ class BrowserKitDriver implements DriverInterface
                 $nodeReflection->getValue($field)->getAttribute('type'),
                 array('submit', 'button', 'image')
             ))) {
-                $valueReflection->setValue(
-                    $to[$field->getName()], $valueReflection->getValue($field)
-                );
+                $valueReflection->setValue($to[$name], $valueReflection->getValue($field));
             }
         }
     }

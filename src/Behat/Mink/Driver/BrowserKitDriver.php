@@ -689,6 +689,20 @@ class BrowserKitDriver implements DriverInterface
     }
 
     /**
+     * Set the dimensions of the window.
+     *
+     * @param integer $width set the window width, measured in pixels
+     * @param integer $height set the window height, measured in pixels
+     * @param string $name window name (null for the main window)
+     *
+     * @throws UnsupportedDriverActionException
+     */
+    public function resizeWindow($width, $height, $name = null)
+    {
+        throw new UnsupportedDriverActionException('Window resizing is not supported by %s', $this);
+    }
+    
+    /**
      * Checks whether element visible located by it's XPath query.
      *
      * @param string $xpath

@@ -320,6 +320,16 @@ class BrowserKitDriver implements DriverInterface
     }
 
     /**
+     * Capture a screenshot of the current window.
+     *
+     * @throws UnsupportedDriverActionException
+     */
+    public function getScreenshot()
+    {
+        throw new UnsupportedDriverActionException('Screenshots are not supported by %s', $this);
+    }
+
+    /**
      * Finds elements with specified XPath query.
      *
      * @param string $xpath

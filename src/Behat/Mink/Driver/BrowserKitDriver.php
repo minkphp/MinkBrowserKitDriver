@@ -775,6 +775,13 @@ class BrowserKitDriver implements DriverInterface
 
         // check if form already exists
         if (isset($this->forms[$formId])) {
+            //a goutte bug with fields like foo[bar][]
+            if (is_array($this->forms[$formId][$fieldName])) {
+                $field = $this->forms[$formId][$fieldName];
+
+                return array_pop($field);
+            }
+            
             return $this->forms[$formId][$fieldName];
         }
 
@@ -786,6 +793,13 @@ class BrowserKitDriver implements DriverInterface
         }
 
         $this->forms[$formId] = new Form($buttonNode, $this->client->getRequest()->getUri());
+
+        //a goutte bug with fields like foo[bar][]
+        if (is_array($this->forms[$formId][$fieldName])) {
+            $field = $this->forms[$formId][$fieldName];
+
+            return array_pop($field);
+        }
 
         return $this->forms[$formId][$fieldName];
     }

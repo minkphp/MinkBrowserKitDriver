@@ -752,7 +752,7 @@ class BrowserKitDriver implements DriverInterface
      * @throws ElementNotFoundException
      * @throws \LogicException
      */
-    private function getFormField($xpath)
+    protected function getFormField($xpath)
     {
         if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
             throw new ElementNotFoundException(

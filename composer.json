@@ -16,8 +16,8 @@
 
     "require": {
         "php":                  ">=5.3.1",
-        "symfony/browser-kit":  ">=2.0.0,<2.2.0",
-        "symfony/dom-crawler":  ">=2.0.0,<2.2.0"
+        "symfony/browser-kit":  ">=2.0.0,<2.3-dev",
+        "symfony/dom-crawler":  ">=2.0.0,<2.3-dev"
     },
 
     "autoload": {

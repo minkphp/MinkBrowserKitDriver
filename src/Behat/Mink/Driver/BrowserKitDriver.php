@@ -766,10 +766,10 @@ class BrowserKitDriver implements DriverInterface
 
         // we will access our element by name next, but that's not unique, so we need to know wich is ou element
         $elements = $this->getCrawler()->filterXPath('//*[@name=\''.$fieldNode->getAttribute('name').'\']');
+        $position = 0;
         if(count($elements) > 1) {
             // more than one element contains this name !
             // so we need to find the position of $fieldNode
-            $position = 0;
             foreach($elements as $key => $element) {
                 if($element->getAttribute('id') == $fieldNode->getAttribute('id')) {
                     $position = $key;
@@ -788,11 +788,8 @@ class BrowserKitDriver implements DriverInterface
 
         // check if form already exists
         if (isset($this->forms[$formId])) {
-            //this solves a goutte bug with fields like foo[bar][]
             if (is_array($this->forms[$formId][$fieldName])) {
-                if(isset($position)) {
-                    return $this->forms[$formId][$fieldName][$position];
-                }
+                return $this->forms[$formId][$fieldName][$position];
             }
             
             return $this->forms[$formId][$fieldName];
@@ -807,11 +804,8 @@ class BrowserKitDriver implements DriverInterface
 
         $this->forms[$formId] = new Form($buttonNode, $this->client->getRequest()->getUri());
 
-        //this solves a goutte bug with fields like foo[bar][]
         if (is_array($this->forms[$formId][$fieldName])) {
-            if(isset($position)) {
-                return $this->forms[$formId][$fieldName][$position];
-            }
+            return $this->forms[$formId][$fieldName][$position];
         }
 
         return $this->forms[$formId][$fieldName];

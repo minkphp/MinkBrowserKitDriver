@@ -1,7 +1,7 @@
 {
     "name":         "behat/mink-browserkit-driver",
     "description":  "Symfony2 BrowserKit driver for Mink framework",
-    "keywords":     ["Symfony2", "testing", "browser"],
+    "keywords":     ["Symfony2", "Mink", "testing", "browser"],
     "homepage":     "http://mink.behat.org/",
     "type":         "mink-driver",
     "license":      "MIT",

@@ -22,8 +22,7 @@
     },
 
     "require-dev": {
-        "silex/silex":      "@dev",
-        "phpunit/phpunit":  "3.7.*"
+        "silex/silex": "@dev"
     },
 
     "autoload": {

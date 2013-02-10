@@ -34,6 +34,8 @@ class BrowserKitDriver implements DriverInterface
     private $client;
     private $forms = array();
     private $started = false;
+    private $removeScriptFromUrl = true;
+    private $removeHostFromUrl = false;
 
     /**
      * Initializes Goutte driver.
@@ -64,6 +66,26 @@ class BrowserKitDriver implements DriverInterface
     public function setSession(Session $session)
     {
         $this->session = $session;
+    }
+
+    /**
+     * Tells driver to remove hostname from URL.
+     *
+     * @param Boolean $remove
+     */
+    public function setRemoveHostFromUrl($remove = true)
+    {
+        $this->removeHostFromUrl = (bool) $remove;
+    }
+
+    /**
+     * Tells driver to remove scriptname from URL.
+     *
+     * @param Boolean $remove
+     */
+    public function setRemoveScriptFromUrl($remove = true)
+    {
+        $this->removeScriptFromUrl = (bool) $remove;
     }
 
     /**
@@ -516,6 +538,13 @@ class BrowserKitDriver implements DriverInterface
                 $this->mergeForms($form, $this->forms[$formId]);
             }
 
+            // remove empty file fields from request
+            foreach ($form->getFiles() as $name => $field) {
+                if (empty($field['name']) && empty($field['tmp_name'])) {
+                    $form->remove($name);
+                }
+            }
+
             $this->client->submit($form);
         } else {
             throw new DriverException(sprintf(
@@ -701,7 +730,7 @@ class BrowserKitDriver implements DriverInterface
     {
         throw new UnsupportedDriverActionException('Window resizing is not supported by %s', $this);
     }
-    
+
     /**
      * Checks whether element visible located by it's XPath query.
      *
@@ -739,7 +768,9 @@ class BrowserKitDriver implements DriverInterface
      */
     protected function prepareUrl($url)
     {
-        return preg_replace('/^(https?\:\/\/[^\/]+)(\/[^\/]+\.php)?/', '$1', $url);
+        return preg_replace('#(https?\://[^/]+)(/[^/\.]+\.php)?#',
+            ($this->removeHostFromUrl ? '' : '$1').($this->removeScriptFromUrl ? '' : '$2'), $url
+        );
     }
 
     /**
@@ -781,7 +812,7 @@ class BrowserKitDriver implements DriverInterface
 
                 return array_pop($field);
             }
-            
+
             return $this->forms[$formId][$fieldName];
         }
 

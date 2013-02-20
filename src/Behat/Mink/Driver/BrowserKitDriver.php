@@ -939,5 +939,43 @@ class BrowserKitDriver implements DriverInterface
         }
 
         return $crawler;
+    }    
+    
+    /**
+     * @see     Behat\Mink\Driver\DriverInterface::wait()
+     *
+     * @throws  Behat\Mink\Exception\UnsupportedDriverActionException   action is not supported by this driver
+     */
+    public function acceptAlert()
+    {
+        throw new UnsupportedDriverActionException('Accepting alerts is not supported by %s', $this);
+    }
+
+    /**
+     * Dismiss currently displayed alert dialog.
+     *
+     * Usually, this is equivalent to clicking on the 'X' button in the dialog.
+     */
+    function dismissAlert()
+    {
+        throw new UnsupportedDriverActionException('Dismissing alerts is not supported by %s', $this);
+    }
+
+    /**
+     * Get alert dialog text.
+     */
+    function getAlertText()
+    {
+        throw new UnsupportedDriverActionException('Getting alert text is not supported by %s', $this);
+    }
+
+    /**
+     * Set value of alert dialog text.
+     *
+     * @param string $text
+     */
+    function setAlertText($text)
+    {
+        throw new UnsupportedDriverActionException('Setting alert text is not supported by %s', $this);
     }
 }

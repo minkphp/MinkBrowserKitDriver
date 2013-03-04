@@ -137,6 +137,18 @@ class BrowserKitDriver implements DriverInterface
     }
 
     /**
+     * Performs an HTTP POST request to the specified URL with the given request body
+     *
+     * @param string $url
+     * @param string $requestBody
+     */
+    public function post($url, $requestBody)
+    {
+        $this->client->request('POST', $this->prepareUrl($url), array(), array(), array(), $requestBody);
+        $this->forms = array();
+    }
+
+    /**
      * Returns current URL address.
      *
      * @return string

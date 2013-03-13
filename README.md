@@ -29,7 +29,7 @@ Installation
 
 ``` json
 {
-    "requires": {
+    "require": {
         "behat/mink":                   "1.4.*",
         "behat/mink-browserkit-driver": "1.0.*"
     }

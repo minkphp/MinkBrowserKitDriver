@@ -284,6 +284,18 @@ class BrowserKitDriver implements DriverInterface
     }
 
     /**
+     * Returns the last response body.
+     *
+     * @return string
+     */
+    public function getResponseBody()
+    {
+        $responseBody = $this->client->getResponse()->getContent();
+
+        return $responseBody;
+    }
+
+    /**
      * Sets cookie.
      *
      * @param string $name

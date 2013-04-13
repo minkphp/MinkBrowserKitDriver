@@ -30,7 +30,7 @@ use Behat\Mink\Session,
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
-class BrowserKitDriver implements DriverInterface
+class BrowserKitDriver extends CoreDriver
 {
     private $session;
     private $client;
@@ -176,30 +176,6 @@ class BrowserKitDriver implements DriverInterface
     }
 
     /**
-     * Switches to specific browser window.
-     *
-     * @param string $name window name (null for switching back to main window)
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function switchToWindow($name = null)
-    {
-        throw new UnsupportedDriverActionException('Window management is not supported by %s', $this);
-    }
-
-    /**
-     * Switches to specific iFrame.
-     *
-     * @param string $name iframe name (null for switching back)
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function switchToIFrame($name = null)
-    {
-        throw new UnsupportedDriverActionException('iFrame management is not supported by %s', $this);
-    }
-
-    /**
      * Sets HTTP Basic authentication parameters
      *
      * @param string|Boolean $user     user name or false to disable authentication
@@ -327,16 +303,6 @@ class BrowserKitDriver implements DriverInterface
     public function getContent()
     {
         return $this->getResponse()->getContent();
-    }
-
-    /**
-     * Capture a screenshot of the current window.
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function getScreenshot()
-    {
-        throw new UnsupportedDriverActionException('Screenshots are not supported by %s', $this);
     }
 
     /**
@@ -564,186 +530,6 @@ class BrowserKitDriver implements DriverInterface
     public function attachFile($xpath, $path)
     {
         $this->getFormField($xpath)->upload($path);
-    }
-
-    /**
-     * Double-clicks button or link located by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function doubleClick($xpath)
-    {
-        throw new UnsupportedDriverActionException('Double-clicking is not supported by %s', $this);
-    }
-
-    /**
-     * Right-clicks button or link located by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function rightClick($xpath)
-    {
-        throw new UnsupportedDriverActionException('Right-clicking is not supported by %s', $this);
-    }
-
-    /**
-     * Simulates a mouse over on the element.
-     *
-     * @param string $xpath
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function mouseOver($xpath)
-    {
-        throw new UnsupportedDriverActionException('Mouse moving is not supported by %s', $this);
-    }
-
-    /**
-     * Brings focus to element.
-     *
-     * @param string $xpath
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function focus($xpath)
-    {
-        throw new UnsupportedDriverActionException('Focus actions are not supported by %s', $this);
-    }
-
-    /**
-     * Removes focus from element.
-     *
-     * @param string $xpath
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function blur($xpath)
-    {
-        throw new UnsupportedDriverActionException('Focus actions are not supported by %s', $this);
-    }
-
-    /**
-     * Presses specific keyboard key.
-     *
-     * @param string $xpath
-     * @param mixed  $char     could be either char ('b') or char-code (98)
-     * @param string $modifier keyboard modifier (could be 'ctrl', 'alt', 'shift' or 'meta')
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function keyPress($xpath, $char, $modifier = null)
-    {
-        throw new UnsupportedDriverActionException('Keyboard actions are not supported by %s', $this);
-    }
-
-    /**
-     * Pressed down specific keyboard key.
-     *
-     * @param string $xpath
-     * @param mixed  $char     could be either char ('b') or char-code (98)
-     * @param string $modifier keyboard modifier (could be 'ctrl', 'alt', 'shift' or 'meta')
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function keyDown($xpath, $char, $modifier = null)
-    {
-        throw new UnsupportedDriverActionException('Keyboard actions are not supported by %s', $this);
-    }
-
-    /**
-     * Pressed up specific keyboard key.
-     *
-     * @param string $xpath
-     * @param mixed  $char     could be either char ('b') or char-code (98)
-     * @param string $modifier keyboard modifier (could be 'ctrl', 'alt', 'shift' or 'meta')
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function keyUp($xpath, $char, $modifier = null)
-    {
-        throw new UnsupportedDriverActionException('Keyboard actions are not supported by %s', $this);
-    }
-
-    /**
-     * Executes JS script.
-     *
-     * @param string $script
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function executeScript($script)
-    {
-        throw new UnsupportedDriverActionException('JS scripts execution is not supported by %s', $this);
-    }
-
-    /**
-     * Evaluates JS script.
-     *
-     * @param string $script
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function evaluateScript($script)
-    {
-        throw new UnsupportedDriverActionException('JS scripts execution is not supported by %s', $this);
-    }
-
-    /**
-     * Waits some time or until JS condition turns true.
-     *
-     * @param integer $time      time in milliseconds
-     * @param string  $condition JS condition
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function wait($time, $condition)
-    {
-        throw new UnsupportedDriverActionException('JS scripts execution is not supported by %s', $this);
-    }
-
-    /**
-     * Set the dimensions of the window.
-     *
-     * @param integer $width set the window width, measured in pixels
-     * @param integer $height set the window height, measured in pixels
-     * @param string $name window name (null for the main window)
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function resizeWindow($width, $height, $name = null)
-    {
-        throw new UnsupportedDriverActionException('Window resizing is not supported by %s', $this);
-    }
-
-    /**
-     * Checks whether element visible located by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return Boolean
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function isVisible($xpath)
-    {
-        throw new UnsupportedDriverActionException('Element visibility check is not supported by %s', $this);
-    }
-
-    /**
-     * Drag one element onto another.
-     *
-     * @param string $sourceXpath
-     * @param string $destinationXpath
-     *
-     * @throws UnsupportedDriverActionException
-     */
-    public function dragTo($sourceXpath, $destinationXpath)
-    {
-        throw new UnsupportedDriverActionException('Element dragging is not supported by %s', $this);
     }
 
     protected function getResponse()

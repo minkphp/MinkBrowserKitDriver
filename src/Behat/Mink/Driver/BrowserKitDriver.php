@@ -4,10 +4,12 @@ namespace Behat\Mink\Driver;
 
 use Symfony\Component\BrowserKit\Client,
     Symfony\Component\BrowserKit\Cookie,
+    Symfony\Component\BrowserKit\Response,
     Symfony\Component\DomCrawler\Crawler,
     Symfony\Component\DomCrawler\Form,
     Symfony\Component\DomCrawler\Field,
     Symfony\Component\DomCrawler\Field\FormField;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 use Behat\Mink\Session,
     Behat\Mink\Element\NodeElement,
@@ -254,21 +256,7 @@ class BrowserKitDriver implements DriverInterface
      */
     public function getResponseHeaders()
     {
-        $headers         = array();
-        $responseHeaders = trim($this->client->getResponse()->headers->__toString());
-
-        foreach (explode("\r\n", $responseHeaders) as $header) {
-            list($name, $value) = array_map('trim', explode(':', $header, 2));
-
-            if (isset($headers[$name])) {
-                $headers[$name]   = array($headers[$name]);
-                $headers[$name][] = $value;
-            } else {
-                $headers[$name] = $value;
-            }
-        }
-
-        return $headers;
+        return $this->getResponse()->getHeaders();
     }
 
     /**
@@ -328,7 +316,7 @@ class BrowserKitDriver implements DriverInterface
      */
     public function getStatusCode()
     {
-        return $this->client->getResponse()->getStatusCode();
+        return $this->getResponse()->getStatus();
     }
 
     /**
@@ -338,7 +326,7 @@ class BrowserKitDriver implements DriverInterface
      */
     public function getContent()
     {
-        return $this->client->getResponse()->getContent();
+        return $this->getResponse()->getContent();
     }
 
     /**
@@ -756,6 +744,40 @@ class BrowserKitDriver implements DriverInterface
     public function dragTo($sourceXpath, $destinationXpath)
     {
         throw new UnsupportedDriverActionException('Element dragging is not supported by %s', $this);
+    }
+
+    protected function getResponse()
+    {
+        $response = $this->getClient()->getResponse();
+
+        if ($response instanceof Response) {
+            return $response;
+        }
+
+        // due to a bug, the HttpKernel client implementation returns the HttpFoundation response
+        // The conversion logic is copied from Symfony\Component\HttpKernel\Client::filterResponse
+        if ($response instanceof HttpFoundationResponse) {
+            $headers = $response->headers->all();
+            if ($response->headers->getCookies()) {
+                $cookies = array();
+                foreach ($response->headers->getCookies() as $cookie) {
+                    $cookies[] = new Cookie($cookie->getName(), $cookie->getValue(), $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly());
+                }
+                $headers['Set-Cookie'] = $cookies;
+            }
+
+            // this is needed to support StreamedResponse
+            ob_start();
+            $response->sendContent();
+            $content = ob_get_clean();
+
+            return new Response($content, $response->getStatusCode(), $headers);
+        }
+
+        throw new \LogicException(sprintf(
+            'The BrowserKit client returned an unsupported response implementation: %s',
+            get_class($response)
+        ));
     }
 
     /**

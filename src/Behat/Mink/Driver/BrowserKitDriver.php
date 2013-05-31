@@ -306,6 +306,26 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
+     * Return the names of all open windows
+     *
+     * @return array    array of all open windows
+     */
+    public function getWindowNames()
+    {
+        throw new UnsupportedDriverActionException('Listing all window names is not supported by %s', $this);
+    }
+
+    /**
+     * Return the name of the currently active window
+     *
+     * @return string    the name of the current window
+     */
+    public function getWindowName()
+    {
+        throw new UnsupportedDriverActionException('Listing this window name is not supported by %s', $this);
+    }
+
+    /**
      * Finds elements with specified XPath query.
      *
      * @param string $xpath

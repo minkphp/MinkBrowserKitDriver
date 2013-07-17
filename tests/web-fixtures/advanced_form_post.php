@@ -16,7 +16,7 @@
         $POST['select_multiple_numbers'] = explode(',', $POST['select_multiple_numbers'][0]);
     }
 
-    $POST['agreement'] = (isset($POST['agreement']) && ('1' === $POST['agreement'] || 'on' === $POST['agreement'])) ? 'on' : 'off';
+    $POST['agreement'] = (isset($POST['agreement'])) ? 'on' : 'off'; // checkbox can have any value and will be successful in case "on" http://www.w3.org/TR/html401/interact/forms.html#checkbox
     echo str_replace('>', '', var_export($POST, true)) . "\n";
     if (isset($FILES['about']) && file_exists($FILES['about']->getPathname())) {
         echo file_get_contents($FILES['about']->getPathname());

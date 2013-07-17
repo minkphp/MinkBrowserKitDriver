@@ -407,7 +407,7 @@ class BrowserKitDriver extends CoreDriver
         $value = $field->getValue();
 
         if ($field instanceof Field\ChoiceFormField && 'checkbox' === $field->getType()) {
-            $value = '1' == $value;
+            $value = null !== $value;
         }
 
         return $value;

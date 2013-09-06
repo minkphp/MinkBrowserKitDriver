@@ -40,7 +40,7 @@ class BrowserKitDriver extends CoreDriver
     private $removeHostFromUrl = false;
 
     /**
-     * Initializes Goutte driver.
+     * Initializes BrowserKit driver.
      *
      * @param Client $client BrowserKit client instance
      */
@@ -502,7 +502,7 @@ class BrowserKitDriver extends CoreDriver
             $this->client->submit($form);
         } else {
             throw new DriverException(sprintf(
-                'Goutte driver supports clicking on inputs and links only. But "%s" provided', $type
+                'BrowserKit driver supports clicking on inputs and links only. But "%s" provided', $type
             ));
         }
 
@@ -568,7 +568,7 @@ class BrowserKitDriver extends CoreDriver
 
     /**
      * Prepares URL for visiting.
-     * Removes "*.php/" from urls and then passes it to GoutteDriver::visit().
+     * Removes "*.php/" from urls and then passes it to BrowserKitDriver::visit().
      *
      * @param string $url
      *

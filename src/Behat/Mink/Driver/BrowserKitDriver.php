@@ -145,7 +145,13 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getCurrentUrl()
     {
-        return $this->client->getRequest()->getUri();
+        $request = $this->client->getRequest();
+
+        if ($request == null) {
+            throw new DriverException('Current URL not set. Did you start the driver?');
+        }
+
+        return $request->getUri();
     }
 
     /**

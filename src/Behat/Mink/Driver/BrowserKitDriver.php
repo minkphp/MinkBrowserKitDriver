@@ -606,12 +606,22 @@ class BrowserKitDriver extends CoreDriver
         // we will access our element by name next, but that's not unique, so we need to know wich is ou element
         $elements = $this->getCrawler()->filterXPath('//*[@name=\''.$fieldNode->getAttribute('name').'\']');
         $position = 0;
-        if(count($elements) > 1) {
+         if(count($elements) > 1) {
             // more than one element contains this name !
-            // so we need to find the position of $fieldNode
+            // so we need to find the position of $fieldNode 
+            // based on field "id" or "value" if element does not have an id
             foreach($elements as $key => $element) {
-                if($element->getAttribute('id') == $fieldNode->getAttribute('id')) {
-                    $position = $key;
+             
+                $elementAttrib = $element->getAttribute('id');
+                $fieldNodeAttrib = $fieldNode->getAttribute('id');
+                
+                if($elementAttrib == "" && $fieldNodeAttrib == ""){
+                    $elementAttrib = $element->getAttribute('value');
+                    $fieldNodeAttrib = $fieldNode->getAttribute('value');
+                }
+                
+                if($elementAttrib == $fieldNodeAttrib) {
+                  $position = $key;
                 }
             }
         }

@@ -484,8 +484,8 @@ class BrowserKitDriver extends CoreDriver
 
         if ('a' === $type) {
             $this->client->click($node->link());
-        } elseif('input' === $type || 'button' === $type) {
-			$this->submit($node->form());
+        } elseif ('input' === $type || 'button' === $type) {
+            $this->submit($node->form());
         } else {
             throw new DriverException(sprintf(
                 'BrowserKit driver supports clicking on inputs and links only. But "%s" provided', $type
@@ -516,42 +516,42 @@ class BrowserKitDriver extends CoreDriver
         $this->getFormField($xpath)->upload($path);
     }
 
-	/**
-	 * Submits the form.
-	 *
-	 * @param string $xpath Xpath.
-	 * @throws ElementNotFoundException
-	 */
-	public function submitForm($xpath)
-	{
-		if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-			throw new ElementNotFoundException(
-				$this->session, 'form', 'xpath', $xpath
-			);
-		}
+    /**
+     * Submits the form.
+     *
+     * @param string $xpath Xpath.
+     * @throws ElementNotFoundException
+     */
+    public function submitForm($xpath)
+    {
+        if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
+            throw new ElementNotFoundException(
+                $this->session, 'form', 'xpath', $xpath
+            );
+        }
 
-		$this->submit($nodes->eq(0)->form());
-	}
+        $this->submit($nodes->eq(0)->form());
+    }
 
-	private function submit(Form $form)
-	{
-		$formId = $this->getFormNodeId($form->getFormNode());
+    private function submit(Form $form)
+    {
+        $formId = $this->getFormNodeId($form->getFormNode());
 
-		if (isset($this->forms[$formId])) {
-			$this->mergeForms($form, $this->forms[$formId]);
-		}
+        if (isset($this->forms[$formId])) {
+            $this->mergeForms($form, $this->forms[$formId]);
+        }
 
-		// remove empty file fields from request
-		foreach ($form->getFiles() as $name => $field) {
-			if (empty($field['name']) && empty($field['tmp_name'])) {
-				$form->remove($name);
-			}
-		}
+        // remove empty file fields from request
+        foreach ($form->getFiles() as $name => $field) {
+            if (empty($field['name']) && empty($field['tmp_name'])) {
+                $form->remove($name);
+            }
+        }
 
-		$this->client->submit($form);
+        $this->client->submit($form);
 
-		$this->forms = array();
-	}
+        $this->forms = array();
+    }
 
     protected function getResponse()
     {

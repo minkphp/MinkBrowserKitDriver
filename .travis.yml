@@ -5,10 +5,12 @@ php: [5.3, 5.4, 5.5]
 env:
   - SYMFONY_VERSION='2.1.*'
   - SYMFONY_VERSION='2.2.*'
+  - SYMFONY_VERSION='2.3.*'
+  - SYMFONY_VERSION='2.4.*@dev'
 
 before_script:
-  - curl http://getcomposer.org/installer | php
-  - php composer.phar require --no-update symfony/symfony=$SYMFONY_VERSION
-  - php composer.phar install --dev --prefer-source
+  - composer self-update -n
+  - composer require -n --no-update symfony/symfony=$SYMFONY_VERSION
+  - composer install -n --prefer-source
 
 script: phpunit -v

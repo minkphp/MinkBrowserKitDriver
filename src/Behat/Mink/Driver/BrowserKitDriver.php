@@ -533,26 +533,6 @@ class BrowserKitDriver extends CoreDriver
         $this->submit($nodes->eq(0)->form());
     }
 
-    private function submit(Form $form)
-    {
-        $formId = $this->getFormNodeId($form->getFormNode());
-
-        if (isset($this->forms[$formId])) {
-            $this->mergeForms($form, $this->forms[$formId]);
-        }
-
-        // remove empty file fields from request
-        foreach ($form->getFiles() as $name => $field) {
-            if (empty($field['name']) && empty($field['tmp_name'])) {
-                $form->remove($name);
-            }
-        }
-
-        $this->client->submit($form);
-
-        $this->forms = array();
-    }
-
     protected function getResponse()
     {
         $response = $this->getClient()->getResponse();
@@ -669,6 +649,26 @@ class BrowserKitDriver extends CoreDriver
         }
 
         return $this->forms[$formId][$fieldName];
+    }
+
+    private function submit(Form $form)
+    {
+        $formId = $this->getFormNodeId($form->getFormNode());
+
+        if (isset($this->forms[$formId])) {
+            $this->mergeForms($form, $this->forms[$formId]);
+        }
+
+        // remove empty file fields from request
+        foreach ($form->getFiles() as $name => $field) {
+            if (empty($field['name']) && empty($field['tmp_name'])) {
+                $form->remove($name);
+            }
+        }
+
+        $this->client->submit($form);
+
+        $this->forms = array();
     }
 
     /**

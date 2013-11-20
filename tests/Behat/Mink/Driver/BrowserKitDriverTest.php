@@ -21,8 +21,6 @@ class BrowserKitDriverTest extends HeadlessDriverTest
 
     protected function pathTo($path)
     {
-        $path = preg_replace('#quoted$#', 'quoted=', $path);
-
         return 'http://localhost'.$path;
     }
 }

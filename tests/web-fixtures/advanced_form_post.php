@@ -6,7 +6,7 @@
 </head>
 <body>
 <?php
-    //error_reporting(0);
+    error_reporting(0);
 
     $request = $app['request'];
     $POST    = $request->request->all();
@@ -16,7 +16,8 @@
         $POST['select_multiple_numbers'] = explode(',', $POST['select_multiple_numbers'][0]);
     }
 
-    $POST['agreement'] = (isset($POST['agreement'])) ? 'on' : 'off'; // checkbox can have any value and will be successful in case "on" http://www.w3.org/TR/html401/interact/forms.html#checkbox
+    $POST['agreement'] = isset($POST['agreement']) ? 'on' : 'off'; // checkbox can have any value and will be successful in case "on" http://www.w3.org/TR/html401/interact/forms.html#checkbox
+    ksort($POST);
     echo str_replace('>', '', var_export($POST, true)) . "\n";
     if (isset($FILES['about']) && file_exists($FILES['about']->getPathname())) {
         echo file_get_contents($FILES['about']->getPathname());

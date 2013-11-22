@@ -465,6 +465,28 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
+     * Checks whether select option, located by it's XPath query, is selected.
+     *
+     * @param string $xpath
+     *
+     * @return Boolean
+     */
+    public function isSelected($xpath)
+    {
+        if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
+            throw new ElementNotFoundException(
+                $this->session, 'option', 'xpath', $xpath
+            );
+        }
+
+        $optionValue = $this->getCrawlerNode($crawler->eq(0))->getAttribute('value');
+        $selectField = $this->getFormField('(' . $xpath . ')/ancestor-or-self::*[local-name()="select"]');
+        $selectValue = $selectField->getValue();
+
+        return is_array($selectValue) ? in_array($optionValue, $selectValue) : $optionValue == $selectValue;
+    }
+
+    /**
      * Clicks button or link located by it's XPath query.
      *
      * @param string $xpath

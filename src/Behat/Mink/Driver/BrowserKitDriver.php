@@ -380,9 +380,13 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getAttribute($xpath, $name)
     {
-        $value = $this->getCrawler()->filterXPath($xpath)->eq(0)->attr($name);
+        $node = $this->getCrawler()->filterXPath($xpath)->eq(0);
 
-        return '' !== $value ? $value : null;
+        if ($this->getCrawlerNode($node)->hasAttribute($name)) {
+            return $node->attr($name);
+        }
+
+        return null;
     }
 
     /**

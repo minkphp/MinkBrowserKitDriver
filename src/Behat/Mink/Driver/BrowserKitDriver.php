@@ -145,7 +145,16 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getCurrentUrl()
     {
-        return $this->client->getRequest()->getUri();
+        $request = $this->client->getRequest();
+
+        if ($request == null) {
+            // If no request exists, return the current
+            // URL as null instead of running into a
+            // "method on non-object" error.
+            return null;
+        }
+
+        return $request->getUri();
     }
 
     /**

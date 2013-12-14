@@ -1,7 +1,9 @@
 Mink BrowserKit Driver
 ======================
 
-- [![Build Status](https://secure.travis-ci.org/Behat/MinkBrowserKitDriver.png?branch=master)](http://travis-ci.org/Behat/MinkBrowserKitDriver)
+[![Latest Stable Version](https://poser.pugx.org/behat/mink-browserkit-driver/v/stable.png)](https://packagist.org/packages/behat/mink-browserkit-driver)
+[![Total Downloads](https://poser.pugx.org/behat/mink-browserkit-driver/downloads.png)](https://packagist.org/packages/behat/mink-browserkit-driver)
+[![Build Status](https://secure.travis-ci.org/Behat/MinkBrowserKitDriver.png?branch=master)](http://travis-ci.org/Behat/MinkBrowserKitDriver)
 
 Usage Example
 -------------

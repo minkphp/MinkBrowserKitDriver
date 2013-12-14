@@ -27,8 +27,8 @@ $cbk = function ($file) use ($app, $def, $ovr) {
     return $content;
 };
 
-$app->get('/{file}', $cbk);
-$app->post('/{file}', $cbk);
+$app->get('/{file}', $cbk)->assert('file', '.*');
+$app->post('/{file}', $cbk)->assert('file', '.*');
 
 $app['debug'] = true;
 $app['exception_handler']->disable();

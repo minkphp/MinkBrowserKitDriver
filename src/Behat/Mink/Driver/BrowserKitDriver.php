@@ -121,8 +121,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function reset()
     {
-        $this->client->restart();
-        $this->forms = array();
+        $this->client->getCookieJar()->clear();
     }
 
     /**
@@ -250,17 +249,45 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setCookie($name, $value = null)
     {
-        $jar = $this->client->getCookieJar();
-
         if (null === $value) {
-            if (null !== $jar->get($name)) {
-                $jar->expire($name);
-            }
+            $this->deleteCookie($name);
 
             return;
         }
 
+        $jar = $this->client->getCookieJar();
         $jar->set(new Cookie($name, $value));
+    }
+
+    /**
+     * Deletes a cookie by name.
+     *
+     * @param string $name Cookie name.
+     */
+    protected function deleteCookie($name)
+    {
+        $path = $this->getCookiePath();
+        $jar = $this->client->getCookieJar();
+
+        do {
+            if (null !== $jar->get($name, $path)) {
+                $jar->expire($name, $path);
+            }
+
+            $path = preg_replace('/.$/', '', $path);
+        } while ($path);
+    }
+
+    /**
+     * Returns current cookie path.
+     *
+     * @return string
+     */
+    protected function getCookiePath()
+    {
+        $requestUri = $this->getClient()->getRequest()->getUri();
+
+        return dirname(parse_url($requestUri, PHP_URL_PATH));
     }
 
     /**

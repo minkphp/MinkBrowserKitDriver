@@ -8,11 +8,7 @@
 </head>
 <body>
     Previous cookie: <?php
-    if ($app['request']->cookies->has('srvr_cookie')) {
-        echo $app['request']->cookies->get('srvr_cookie');
-    } else {
-        echo 'NO';
-    }
+        echo $app['request']->cookies->has('srvr_cookie') ? $app['request']->cookies->get('srvr_cookie') : 'NO';
     ?>
 </body>
 </html>

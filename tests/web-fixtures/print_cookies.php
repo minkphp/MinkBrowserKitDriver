@@ -6,20 +6,20 @@
 </head>
 <body>
     <?php
-        $cookies = $app['request']->cookies->all();
-        unset($cookies['MOCKSESSID']);
+    $cookies = $app['request']->cookies->all();
+    unset($cookies['MOCKSESSID']);
 
-        if (isset($cookies['srvr_cookie'])) {
-            $srvrCookie = $cookies['srvr_cookie'];
-            unset($cookies['srvr_cookie']);
-            $cookies['_SESS'] = '';
-            $cookies['srvr_cookie'] = $srvrCookie;
-        }
+    if (isset($cookies['srvr_cookie'])) {
+        $srvrCookie = $cookies['srvr_cookie'];
+        unset($cookies['srvr_cookie']);
+        $cookies['_SESS'] = '';
+        $cookies['srvr_cookie'] = $srvrCookie;
+    }
 
-        foreach ($cookies as $name => $val) {
-            $cookies[$name] = (string) $val;
-        }
-        echo str_replace(array('>'), '', var_export($cookies, true));
+    foreach ($cookies as $name => $val) {
+        $cookies[$name] = (string)$val;
+    }
+    echo str_replace(array('>'), '', var_export($cookies, true));
     ?>
 </body>
 </html>

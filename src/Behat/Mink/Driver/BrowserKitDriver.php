@@ -2,20 +2,18 @@
 
 namespace Behat\Mink\Driver;
 
-use Symfony\Component\BrowserKit\Client,
-    Symfony\Component\BrowserKit\Cookie,
-    Symfony\Component\BrowserKit\Response,
-    Symfony\Component\DomCrawler\Crawler,
-    Symfony\Component\DomCrawler\Form,
-    Symfony\Component\DomCrawler\Field,
-    Symfony\Component\DomCrawler\Field\FormField;
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\DriverException;
+use Behat\Mink\Exception\ElementNotFoundException;
+use Behat\Mink\Session;
+use Symfony\Component\BrowserKit\Client;
+use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\DomCrawler\Field;
+use Symfony\Component\DomCrawler\Field\FormField;
+use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
-
-use Behat\Mink\Session,
-    Behat\Mink\Element\NodeElement,
-    Behat\Mink\Exception\DriverException,
-    Behat\Mink\Exception\UnsupportedDriverActionException,
-    Behat\Mink\Exception\ElementNotFoundException;
 
 /*
  * This file is part of the Behat\Mink.
@@ -483,13 +481,12 @@ class BrowserKitDriver extends CoreDriver
      * @param string $xpath
      *
      * @return Boolean
+     * @throws ElementNotFoundException When element wasn't found
      */
     public function isSelected($xpath)
     {
         if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException(
-                $this->session, 'option', 'xpath', $xpath
-            );
+            throw new ElementNotFoundException($this->session, 'option', 'xpath', $xpath);
         }
 
         $optionValue = $this->getCrawlerNode($crawler->eq(0))->getAttribute('value');
@@ -504,16 +501,15 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string $xpath
      *
-     * @throws ElementNotFoundException
-     * @throws DriverException
+     * @throws ElementNotFoundException When element wasn't found
+     * @throws DriverException When attempted to click on not allowed element
      */
     public function click($xpath)
     {
         if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException(
-                $this->session, 'link or button', 'xpath', $xpath
-            );
+            throw new ElementNotFoundException($this->session, 'link or button', 'xpath', $xpath);
         }
+
         $node = $nodes->eq(0);
         $type = $this->getCrawlerNode($node)->nodeName;
 
@@ -522,9 +518,8 @@ class BrowserKitDriver extends CoreDriver
         } elseif ('input' === $type || 'button' === $type) {
             $this->submit($node->form());
         } else {
-            throw new DriverException(sprintf(
-                'BrowserKit driver supports clicking on inputs and links only. But "%s" provided', $type
-            ));
+            $message = 'BrowserKit driver supports clicking on inputs and links only. But "%s" provided';
+            throw new DriverException(sprintf($message, $type));
         }
     }
 
@@ -555,14 +550,12 @@ class BrowserKitDriver extends CoreDriver
      * Submits the form.
      *
      * @param string $xpath Xpath.
-     * @throws ElementNotFoundException
+     * @throws ElementNotFoundException When element wasn't found
      */
     public function submitForm($xpath)
     {
         if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException(
-                $this->session, 'form', 'xpath', $xpath
-            );
+            throw new ElementNotFoundException($this->session, 'form', 'xpath', $xpath);
         }
 
         $this->submit($nodes->eq(0)->form());
@@ -583,7 +576,15 @@ class BrowserKitDriver extends CoreDriver
             if ($response->headers->getCookies()) {
                 $cookies = array();
                 foreach ($response->headers->getCookies() as $cookie) {
-                    $cookies[] = new Cookie($cookie->getName(), $cookie->getValue(), $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly());
+                    $cookies[] = new Cookie(
+                        $cookie->getName(),
+                        $cookie->getValue(),
+                        $cookie->getExpiresTime(),
+                        $cookie->getPath(),
+                        $cookie->getDomain(),
+                        $cookie->isSecure(),
+                        $cookie->isHttpOnly()
+                    );
                 }
                 $headers['Set-Cookie'] = $cookies;
             }
@@ -612,9 +613,9 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function prepareUrl($url)
     {
-        return preg_replace('#(https?\://[^/]+)(/[^/\.]+\.php)?#',
-            ($this->removeHostFromUrl ? '' : '$1').($this->removeScriptFromUrl ? '' : '$2'), $url
-        );
+        $replacement = ($this->removeHostFromUrl ? '' : '$1') . ($this->removeScriptFromUrl ? '' : '$2');
+
+        return preg_replace('#(https?\://[^/]+)(/[^/\.]+\.php)?#', $replacement, $url);
     }
 
     /**
@@ -630,9 +631,7 @@ class BrowserKitDriver extends CoreDriver
     protected function getFormField($xpath)
     {
         if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException(
-                $this->session, 'form field', 'xpath', $xpath
-            );
+            throw new ElementNotFoundException($this->session, 'form field', 'xpath', $xpath);
         }
 
         $fieldNode = $this->getCrawlerNode($crawler);
@@ -642,11 +641,11 @@ class BrowserKitDriver extends CoreDriver
         // we will access our element by name next, but that's not unique, so we need to know which is our element
         $elements = $this->getCrawler()->filterXPath('//*[@name=\''.$fieldNode->getAttribute('name').'\']');
         $position = 0;
-        if(count($elements) > 1) {
+        if (count($elements) > 1) {
             // more than one element contains this name !
             // so we need to find the position of $fieldNode
-            foreach($elements as $key => $element) {
-                if($element->getNodePath() === $fieldNode->getNodePath()) {
+            foreach ($elements as $key => $element) {
+                if ($element->getNodePath() === $fieldNode->getNodePath()) {
                     $position = $key;
                     break;
                 }
@@ -673,9 +672,7 @@ class BrowserKitDriver extends CoreDriver
 
         // find form button
         if (null === $buttonNode = $this->findFormButton($formNode)) {
-            throw new ElementNotFoundException(
-                $this->session, 'form submit button for field with xpath "'.$xpath.'"'
-            );
+            throw new ElementNotFoundException($this->session, 'form submit button for field with xpath "' . $xpath . '"');
         }
 
         $this->forms[$formId] = new Form($buttonNode, $this->client->getRequest()->getUri());

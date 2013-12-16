@@ -7,7 +7,7 @@ $app->register(new \Silex\Provider\SessionServiceProvider());
 
 $def = realpath(__DIR__.'/../vendor/behat/mink/tests/Behat/Mink/Driver/web-fixtures');
 $ovr = realpath(__DIR__.'/web-fixtures');
-$cbk = function($file) use($app, $def, $ovr) {
+$cbk = function ($file) use ($app, $def, $ovr) {
     $file = str_replace('.file', '.php', $file);
     $path = file_exists($ovr.'/'.$file) ? $ovr.'/'.$file : $def.'/'.$file;
     $resp = null;

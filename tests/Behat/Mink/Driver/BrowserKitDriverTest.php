@@ -23,4 +23,12 @@ class BrowserKitDriverTest extends HeadlessDriverTest
     {
         return 'http://localhost'.$path;
     }
+
+    public function testCloneDriver()
+    {
+        $driver1 = $this->getDriver();
+        $driver2 = clone $driver1;
+
+        $this->assertNotSame($driver1->getClient(), $driver2->getClient());
+    }
 }

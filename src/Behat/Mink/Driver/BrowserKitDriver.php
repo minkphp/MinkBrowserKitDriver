@@ -49,6 +49,14 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
+     * Clones the current BrowserKit instance.
+     */
+    public function __clone()
+    {
+        $this->client = clone $this->client;
+    }
+
+    /**
      * Returns BrowserKit HTTP client instance.
      *
      * @return Client

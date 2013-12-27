@@ -1,6 +1,7 @@
 <?php
+    $requestUri = $app['request']->server->get('REQUEST_URI');
     $resp = new Symfony\Component\HttpFoundation\Response();
-    $cook = new Symfony\Component\HttpFoundation\Cookie('srvr_cookie', 'srv_var_is_set', 0, '/');
+    $cook = new Symfony\Component\HttpFoundation\Cookie('srvr_cookie', 'srv_var_is_set_sub_folder', 0, dirname($requestUri));
     $resp->headers->setCookie($cook);
 ?>
 <!doctype html public "-//w3c//dtd xhtml 1.1//en" "http://www.w3.org/tr/xhtml11/dtd/xhtml11.dtd">

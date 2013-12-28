@@ -10,10 +10,8 @@
 
 namespace Behat\Mink\Driver;
 
-use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
-use Behat\Mink\Session;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Request;
@@ -36,7 +34,6 @@ use Symfony\Component\HttpKernel\Client as HttpKernelClient;
  */
 class BrowserKitDriver extends CoreDriver
 {
-    private $session;
     private $client;
 
     /**
@@ -72,14 +69,6 @@ class BrowserKitDriver extends CoreDriver
     public function getClient()
     {
         return $this->client;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSession(Session $session)
-    {
-        $this->session = $session;
     }
 
     /**
@@ -351,7 +340,7 @@ class BrowserKitDriver extends CoreDriver
 
         $elements = array();
         foreach ($nodes as $i => $node) {
-            $elements[] = new NodeElement(sprintf('(%s)[%d]', $xpath, $i + 1), $this->session);
+            $elements[] = sprintf('(%s)[%d]', $xpath, $i + 1);
         }
 
         return $elements;

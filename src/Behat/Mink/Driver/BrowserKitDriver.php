@@ -538,15 +538,16 @@ class BrowserKitDriver extends CoreDriver
         }
 
         $node = $nodes->eq(0);
-        $type = $this->getCrawlerNode($node)->nodeName;
+        $crawlerNode = $this->getCrawlerNode($node);
+        $tagName = $crawlerNode->nodeName;
 
-        if ('a' === $type) {
+        if ('a' === $tagName) {
             $this->client->click($node->link());
-        } elseif ('input' === $type || 'button' === $type) {
+        } elseif ($this->canSubmitForm($crawlerNode)) {
             $this->submit($node->form());
         } else {
-            $message = 'BrowserKit driver supports clicking on inputs and links only. But "%s" provided';
-            throw new DriverException(sprintf($message, $type));
+            $message = 'BrowserKit driver supports clicking on links and buttons only. But "%s" provided';
+            throw new DriverException(sprintf($message, $tagName));
         }
     }
 
@@ -699,7 +700,8 @@ class BrowserKitDriver extends CoreDriver
 
         // find form button
         if (null === $buttonNode = $this->findFormButton($formNode)) {
-            throw new ElementNotFoundException($this->session, 'form submit button for field with xpath "' . $xpath . '"');
+            $message = 'form submit button for field with xpath "' . $xpath . '"';
+            throw new ElementNotFoundException($this->session, $message);
         }
 
         $this->forms[$formId] = new Form($buttonNode, $this->client->getRequest()->getUri());
@@ -732,6 +734,24 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
+     * Determines if a node can submit a form.
+     *
+     * @param \DOMNode $node Node.
+     *
+     * @return boolean
+     */
+    private function canSubmitForm(\DOMNode $node)
+    {
+        $type = $node->hasAttribute('type') ? $node->getAttribute('type') : null;
+
+        if ('input' == $node->nodeName && in_array($type, array('submit', 'image'))) {
+            return true;
+        }
+
+        return 'button' == $node->nodeName && (null === $type || 'submit' == $type);
+    }
+
+    /**
      * Returns form node unique identifier.
      *
      * @param \DOMElement $form
@@ -760,7 +780,7 @@ class BrowserKitDriver extends CoreDriver
         $xpath = new \DOMXPath($document);
 
         foreach ($xpath->query('descendant::input | descendant::button', $root) as $node) {
-            if ('button' == $node->nodeName || in_array($node->getAttribute('type'), array('submit', 'button', 'image'))) {
+            if ($this->canSubmitForm($node)) {
                 return $node;
             }
         }

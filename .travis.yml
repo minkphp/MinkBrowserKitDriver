@@ -9,13 +9,10 @@ matrix:
   exclude:
     - php: hhvm
       env: SYMFONY_VERSION='2.3.*'
-    - php: hhvm
-      env: SYMFONY_VERSION='2.5.*@dev'
 
 env:
   - SYMFONY_VERSION='2.3.*'
   - SYMFONY_VERSION='2.4.*'
-  - SYMFONY_VERSION='2.5.*@dev'
 
 before_script:
   - composer require -n --no-update symfony/symfony=$SYMFONY_VERSION

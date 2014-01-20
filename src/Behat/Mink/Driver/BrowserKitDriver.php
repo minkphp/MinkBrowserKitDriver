@@ -593,16 +593,48 @@ class BrowserKitDriver extends CoreDriver
      * @return Response
      *
      * @throws DriverException If there is not response yet
-     * @throws \LogicException If the response cannot be converted to a BrowserKit response
      */
     protected function getResponse()
     {
-        $response = $this->getClient()->getResponse();
+        if (!method_exists($this->client, 'getInternalResponse')) {
+            $implementationResponse = $this->client->getResponse();
+
+            if (null === $implementationResponse) {
+                throw new DriverException('Unable to access the response before visiting a page');
+            }
+
+            return $this->convertImplementationResponse($implementationResponse);
+        }
+
+        $response = $this->client->getInternalResponse();
 
         if (null === $response) {
             throw new DriverException('Unable to access the response before visiting a page');
         }
 
+        return $response;
+    }
+
+    /**
+     * Gets the BrowserKit Response for legacy BrowserKit versions.
+     *
+     * Before 2.3.0, there was no Client::getInternalResponse method, and the
+     * return value of Client::getResponse can be anything when the implementation
+     * uses Client::filterResponse because of a bad choice done in BrowserKit and
+     * kept for BC reasons (the Client::getInternalResponse method has been added
+     * to solve it).
+     *
+     * This implementation supports client which don't rely Client::filterResponse
+     * and clients which use an HttpFoundation Response (like the HttpKernel client).
+     *
+     * @param object $response the response specific to the BrowserKit implementation
+     *
+     * @return Response
+     *
+     * @throws \LogicException If the response cannot be converted to a BrowserKit response
+     */
+    protected function convertImplementationResponse($response)
+    {
         if ($response instanceof Response) {
             return $response;
         }
@@ -636,7 +668,7 @@ class BrowserKitDriver extends CoreDriver
         }
 
         throw new \LogicException(sprintf(
-            'The BrowserKit client returned an unsupported response implementation: %s',
+            'The BrowserKit client returned an unsupported response implementation: %s. Please upgrade your BrowserKit package to 2.3 or newer.',
             get_class($response)
         ));
     }

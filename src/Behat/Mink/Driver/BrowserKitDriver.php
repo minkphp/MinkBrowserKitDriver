@@ -589,9 +589,19 @@ class BrowserKitDriver extends CoreDriver
         $this->submit($nodes->eq(0)->form());
     }
 
+    /**
+     * @return Response
+     *
+     * @throws DriverException If there is not response yet
+     * @throws \LogicException If the response cannot be converted to a BrowserKit response
+     */
     protected function getResponse()
     {
         $response = $this->getClient()->getResponse();
+
+        if (null === $response) {
+            throw new DriverException('Unable to access the response before visiting a page');
+        }
 
         if ($response instanceof Response) {
             return $response;

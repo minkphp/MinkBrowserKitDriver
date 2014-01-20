@@ -8,11 +8,13 @@ use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Session;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Field;
 use Symfony\Component\DomCrawler\Field\FormField;
 use Symfony\Component\DomCrawler\Form;
+use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 /*
@@ -139,12 +141,26 @@ class BrowserKitDriver extends CoreDriver
      * Returns current URL address.
      *
      * @return string
+     *
+     * @throws \LogicException If the BrowserKit client returns an unsupported request on BrowserKit 2.2.x and older
      */
     public function getCurrentUrl()
     {
-        $request = $this->client->getRequest();
+        if (method_exists($this->client, 'getInternalRequest')) {
+            $request = $this->client->getInternalRequest();
+        } else {
+            // BC layer for BrowserKit 2.2.x and older
+            $request = $this->client->getRequest();
 
-        if ($request == null) {
+            if (null !== $request && !$request instanceof Request && !$request instanceof HttpFoundationRequest) {
+                throw new \LogicException(sprintf(
+                    'The BrowserKit client returned an unsupported request implementation: %s. Please upgrade your BrowserKit package to 2.3 or newer.',
+                    get_class($request)
+                ));
+            }
+        }
+
+        if ($request === null) {
             // If no request exists, return the current
             // URL as null instead of running into a
             // "method on non-object" error.
@@ -285,9 +301,7 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function getCookiePath()
     {
-        $requestUri = $this->getClient()->getRequest()->getUri();
-
-        return dirname(parse_url($requestUri, PHP_URL_PATH));
+        return dirname(parse_url($this->getCurrentUrl(), PHP_URL_PATH));
     }
 
     /**
@@ -746,7 +760,7 @@ class BrowserKitDriver extends CoreDriver
             throw new ElementNotFoundException($this->session, $message);
         }
 
-        $this->forms[$formId] = new Form($buttonNode, $this->client->getRequest()->getUri());
+        $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());
 
         if (is_array($this->forms[$formId][$fieldName])) {
             return $this->forms[$formId][$fieldName][$position];

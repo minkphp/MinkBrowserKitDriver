@@ -201,31 +201,21 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setRequestHeader($name, $value)
     {
-        switch (strtolower($name)) {
-            case 'accept':
-                $name = 'HTTP_ACCEPT';
-                break;
-            case 'accept-charset':
-                $name = 'HTTP_ACCEPT_CHARSET';
-                break;
-            case 'accept-encoding':
-                $name = 'HTTP_ACCEPT_ENCODING';
-                break;
-            case 'accept-language':
-                $name = 'HTTP_ACCEPT_LANGUAGE';
-                break;
-            case 'connection':
-                $name = 'HTTP_CONNECTION';
-                break;
-            case 'host':
-                $name = 'HTTP_HOST';
-                break;
-            case 'user-agent':
-                $name = 'HTTP_USER_AGENT';
-                break;
-            case 'authorization':
-                $name = 'PHP_AUTH_DIGEST';
-                break;
+        $nameMap = array(
+            'accept' => 'HTTP_ACCEPT',
+            'accept-charset' => 'HTTP_ACCEPT_CHARSET',
+            'accept-encoding' => 'HTTP_ACCEPT_ENCODING',
+            'accept-language' => 'HTTP_ACCEPT_LANGUAGE',
+            'connection' => 'HTTP_CONNECTION',
+            'host' => 'HTTP_HOST',
+            'user-agent' => 'HTTP_USER_AGENT',
+            'authorization' => 'PHP_AUTH_DIGEST',
+        );
+
+        $lowercaseName = strtolower($name);
+
+        if (isset($nameMap[$lowercaseName])) {
+            $name = $nameMap[$lowercaseName];
         }
 
         $this->client->setServerParameter($name, $value);

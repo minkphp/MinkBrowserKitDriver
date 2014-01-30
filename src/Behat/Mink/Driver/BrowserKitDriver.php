@@ -716,35 +716,15 @@ class BrowserKitDriver extends CoreDriver
 
         $fieldNode = $this->getCrawlerNode($crawler);
         $fieldName = str_replace('[]', '', $fieldNode->getAttribute('name'));
-        $formNode  = $fieldNode;
 
-        // we will access our element by name next, but that's not unique, so we need to know which is our element
-        $elements = $this->getCrawler()->filterXPath('//*[@name=\''.$fieldNode->getAttribute('name').'\']');
-        $position = 0;
-        if (count($elements) > 1) {
-            // more than one element contains this name !
-            // so we need to find the position of $fieldNode
-            foreach ($elements as $key => $element) {
-                if ($element->getNodePath() === $fieldNode->getNodePath()) {
-                    $position = $key;
-                    break;
-                }
-            }
-        }
-
-        do {
-            // use the ancestor form element
-            if (null === $formNode = $formNode->parentNode) {
-                throw new \LogicException('The selected node does not have a form ancestor.');
-            }
-        } while ('form' != $formNode->nodeName);
+        $formNode = $this->getFormNode($fieldNode);
 
         $formId = $this->getFormNodeId($formNode);
 
         // check if form already exists
         if (isset($this->forms[$formId])) {
             if (is_array($this->forms[$formId][$fieldName])) {
-                return $this->forms[$formId][$fieldName][$position];
+                return $this->forms[$formId][$fieldName][$this->getFieldPosition($fieldNode)];
             }
 
             return $this->forms[$formId][$fieldName];
@@ -759,10 +739,52 @@ class BrowserKitDriver extends CoreDriver
         $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());
 
         if (is_array($this->forms[$formId][$fieldName])) {
-            return $this->forms[$formId][$fieldName][$position];
+            return $this->forms[$formId][$fieldName][$this->getFieldPosition($fieldNode)];
         }
 
         return $this->forms[$formId][$fieldName];
+    }
+
+    private function getFormNode(\DOMElement $element)
+    {
+        $formNode = $element;
+
+        do {
+            // use the ancestor form element
+            if (null === $formNode = $formNode->parentNode) {
+                throw new \LogicException('The selected node does not have a form ancestor.');
+            }
+        } while ('form' != $formNode->nodeName);
+
+        return $formNode;
+    }
+
+    /**
+     * Gets the position of the field node among elements with the same name
+     *
+     * BrowserKit uses the field name as index to find the field in its Form object.
+     * When multiple fields have the same name (checkboxes for instance), it will return
+     * an array of elements in the order they appear in the DOM.
+     *
+     * @param \DOMElement $fieldNode
+     *
+     * @return integer
+     */
+    private function getFieldPosition(\DOMElement $fieldNode)
+    {
+        $elements = $this->getCrawler()->filterXPath('//*[@name=\''.$fieldNode->getAttribute('name').'\']');
+
+        if (count($elements) > 1) {
+            // more than one element contains this name !
+            // so we need to find the position of $fieldNode
+            foreach ($elements as $key => $element) {
+                if ($element->getNodePath() === $fieldNode->getNodePath()) {
+                    return $key;
+                }
+            }
+        }
+
+        return 0;
     }
 
     private function submit(Form $form)

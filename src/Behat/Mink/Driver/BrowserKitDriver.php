@@ -555,6 +555,8 @@ class BrowserKitDriver extends CoreDriver
             $this->client->click($node->link());
         } elseif ($this->canSubmitForm($crawlerNode)) {
             $this->submit($node->form());
+        } elseif ($this->canResetForm($crawlerNode)) {
+            $this->resetForm($crawlerNode);
         } else {
             $message = 'BrowserKit driver supports clicking on links and buttons only. But "%s" provided';
             throw new DriverException(sprintf($message, $tagName));
@@ -718,7 +720,6 @@ class BrowserKitDriver extends CoreDriver
         $fieldName = str_replace('[]', '', $fieldNode->getAttribute('name'));
 
         $formNode = $this->getFormNode($fieldNode);
-
         $formId = $this->getFormNodeId($formNode);
 
         // check if form already exists
@@ -813,6 +814,13 @@ class BrowserKitDriver extends CoreDriver
         $this->forms = array();
     }
 
+    private function resetForm(\DOMElement $fieldNode)
+    {
+        $formNode = $this->getFormNode($fieldNode);
+        $formId = $this->getFormNodeId($formNode);
+        unset($this->forms[$formId]);
+    }
+
     /**
      * Determines if a node can submit a form.
      *
@@ -829,6 +837,20 @@ class BrowserKitDriver extends CoreDriver
         }
 
         return 'button' == $node->nodeName && (null === $type || 'submit' == $type);
+    }
+
+    /**
+     * Determines if a node can reset a form.
+     *
+     * @param \DOMElement $node Node.
+     *
+     * @return boolean
+     */
+    private function canResetForm(\DOMElement $node)
+    {
+        $type = $node->hasAttribute('type') ? $node->getAttribute('type') : null;
+
+        return in_array($node->nodeName, array('input', 'button')) && 'reset' == $type;
     }
 
     /**
@@ -894,7 +916,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns DOMNode from crawler instance.
+     * Returns DOMElement from crawler instance.
      *
      * @param Crawler $crawler
      * @param integer $num     number of node from crawler

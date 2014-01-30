@@ -8,11 +8,13 @@ use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Session;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Field;
 use Symfony\Component\DomCrawler\Field\FormField;
 use Symfony\Component\DomCrawler\Form;
+use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 /*
@@ -139,12 +141,26 @@ class BrowserKitDriver extends CoreDriver
      * Returns current URL address.
      *
      * @return string
+     *
+     * @throws \LogicException If the BrowserKit client returns an unsupported request on BrowserKit 2.2.x and older
      */
     public function getCurrentUrl()
     {
-        $request = $this->client->getRequest();
+        if (method_exists($this->client, 'getInternalRequest')) {
+            $request = $this->client->getInternalRequest();
+        } else {
+            // BC layer for BrowserKit 2.2.x and older
+            $request = $this->client->getRequest();
 
-        if ($request == null) {
+            if (null !== $request && !$request instanceof Request && !$request instanceof HttpFoundationRequest) {
+                throw new \LogicException(sprintf(
+                    'The BrowserKit client returned an unsupported request implementation: %s. Please upgrade your BrowserKit package to 2.3 or newer.',
+                    get_class($request)
+                ));
+            }
+        }
+
+        if ($request === null) {
             // If no request exists, return the current
             // URL as null instead of running into a
             // "method on non-object" error.
@@ -285,9 +301,7 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function getCookiePath()
     {
-        $requestUri = $this->getClient()->getRequest()->getUri();
-
-        return dirname(parse_url($requestUri, PHP_URL_PATH));
+        return dirname(parse_url($this->getCurrentUrl(), PHP_URL_PATH));
     }
 
     /**
@@ -589,10 +603,52 @@ class BrowserKitDriver extends CoreDriver
         $this->submit($nodes->eq(0)->form());
     }
 
+    /**
+     * @return Response
+     *
+     * @throws DriverException If there is not response yet
+     */
     protected function getResponse()
     {
-        $response = $this->getClient()->getResponse();
+        if (!method_exists($this->client, 'getInternalResponse')) {
+            $implementationResponse = $this->client->getResponse();
 
+            if (null === $implementationResponse) {
+                throw new DriverException('Unable to access the response before visiting a page');
+            }
+
+            return $this->convertImplementationResponse($implementationResponse);
+        }
+
+        $response = $this->client->getInternalResponse();
+
+        if (null === $response) {
+            throw new DriverException('Unable to access the response before visiting a page');
+        }
+
+        return $response;
+    }
+
+    /**
+     * Gets the BrowserKit Response for legacy BrowserKit versions.
+     *
+     * Before 2.3.0, there was no Client::getInternalResponse method, and the
+     * return value of Client::getResponse can be anything when the implementation
+     * uses Client::filterResponse because of a bad choice done in BrowserKit and
+     * kept for BC reasons (the Client::getInternalResponse method has been added
+     * to solve it).
+     *
+     * This implementation supports client which don't rely Client::filterResponse
+     * and clients which use an HttpFoundation Response (like the HttpKernel client).
+     *
+     * @param object $response the response specific to the BrowserKit implementation
+     *
+     * @return Response
+     *
+     * @throws \LogicException If the response cannot be converted to a BrowserKit response
+     */
+    protected function convertImplementationResponse($response)
+    {
         if ($response instanceof Response) {
             return $response;
         }
@@ -626,7 +682,7 @@ class BrowserKitDriver extends CoreDriver
         }
 
         throw new \LogicException(sprintf(
-            'The BrowserKit client returned an unsupported response implementation: %s',
+            'The BrowserKit client returned an unsupported response implementation: %s. Please upgrade your BrowserKit package to 2.3 or newer.',
             get_class($response)
         ));
     }
@@ -704,7 +760,7 @@ class BrowserKitDriver extends CoreDriver
             throw new ElementNotFoundException($this->session, $message);
         }
 
-        $this->forms[$formId] = new Form($buttonNode, $this->client->getRequest()->getUri());
+        $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());
 
         if (is_array($this->forms[$formId][$fieldName])) {
             return $this->forms[$formId][$fieldName][$position];

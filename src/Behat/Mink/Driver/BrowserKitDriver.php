@@ -732,8 +732,7 @@ class BrowserKitDriver extends CoreDriver
 
         // find form button
         if (null === $buttonNode = $this->findFormButton($formNode)) {
-            $message = 'form submit button for field with xpath "' . $xpath . '"';
-            throw new ElementNotFoundException($this->session, $message);
+            throw new ElementNotFoundException($this->session, 'form submit button for field', 'xpath', $xpath);
         }
 
         $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());

@@ -17,8 +17,8 @@
     "require": {
         "php":                  ">=5.3.1",
         "behat/mink":           "dev-2-architecture-changes",
-        "symfony/browser-kit":  "~2.0",
-        "symfony/dom-crawler":  "~2.0"
+        "symfony/browser-kit":  "~2.3",
+        "symfony/dom-crawler":  "~2.3"
     },
 
     "require-dev": {

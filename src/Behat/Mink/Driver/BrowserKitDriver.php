@@ -148,7 +148,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @return string
      *
-     * @throws \LogicException If the BrowserKit client returns an unsupported request on BrowserKit 2.2.x and older
+     * @throws DriverException If the BrowserKit client returns an unsupported request on BrowserKit 2.2.x and older
      */
     public function getCurrentUrl()
     {
@@ -159,7 +159,7 @@ class BrowserKitDriver extends CoreDriver
             $request = $this->client->getRequest();
 
             if (null !== $request && !$request instanceof Request && !$request instanceof HttpFoundationRequest) {
-                throw new \LogicException(sprintf(
+                throw new DriverException(sprintf(
                     'The BrowserKit client returned an unsupported request implementation: %s. Please upgrade your BrowserKit package to 2.3 or newer.',
                     get_class($request)
                 ));
@@ -642,7 +642,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @return Response
      *
-     * @throws \LogicException If the response cannot be converted to a BrowserKit response
+     * @throws DriverException If the response cannot be converted to a BrowserKit response
      */
     protected function convertImplementationResponse($response)
     {
@@ -678,7 +678,7 @@ class BrowserKitDriver extends CoreDriver
             return new Response($content, $response->getStatusCode(), $headers);
         }
 
-        throw new \LogicException(sprintf(
+        throw new DriverException(sprintf(
             'The BrowserKit client returned an unsupported response implementation: %s. Please upgrade your BrowserKit package to 2.3 or newer.',
             get_class($response)
         ));
@@ -707,7 +707,6 @@ class BrowserKitDriver extends CoreDriver
      * @return FormField
      *
      * @throws ElementNotFoundException
-     * @throws \LogicException
      */
     protected function getFormField($xpath)
     {
@@ -751,7 +750,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @return \DOMElement
      *
-     * @throws \LogicException if the form node cannot be found
+     * @throws DriverException if the form node cannot be found
      */
     private function getFormNode(\DOMElement $element)
     {
@@ -760,7 +759,7 @@ class BrowserKitDriver extends CoreDriver
         do {
             // use the ancestor form element
             if (null === $formNode = $formNode->parentNode) {
-                throw new \LogicException('The selected node does not have a form ancestor.');
+                throw new DriverException('The selected node does not have a form ancestor.');
             }
         } while ('form' != $formNode->nodeName);
 

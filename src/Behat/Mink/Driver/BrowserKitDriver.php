@@ -420,7 +420,7 @@ class BrowserKitDriver extends CoreDriver
      * @param string $xpath
      * @param string $name
      *
-     * @return mixed
+     * @return string|null
      */
     public function getAttribute($xpath, $name)
     {
@@ -588,6 +588,7 @@ class BrowserKitDriver extends CoreDriver
      * Submits the form.
      *
      * @param string $xpath Xpath.
+     *
      * @throws ElementNotFoundException When element wasn't found
      */
     public function submitForm($xpath)
@@ -745,6 +746,13 @@ class BrowserKitDriver extends CoreDriver
         return $this->forms[$formId][$fieldName];
     }
 
+    /**
+     * @param \DOMElement $element
+     *
+     * @return \DOMElement
+     *
+     * @throws \LogicException if the form node cannot be found
+     */
     private function getFormNode(\DOMElement $element)
     {
         $formNode = $element;
@@ -830,7 +838,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param \DOMElement $form
      *
-     * @return mixed
+     * @return string
      */
     private function getFormNodeId(\DOMElement $form)
     {
@@ -842,7 +850,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param \DOMElement $form
      *
-     * @return \DOMElement
+     * @return \DOMElement|null
      */
     private function findFormButton(\DOMElement $form)
     {
@@ -893,7 +901,7 @@ class BrowserKitDriver extends CoreDriver
      * @param Crawler $crawler
      * @param integer $num     number of node from crawler
      *
-     * @return \DOMElement
+     * @return \DOMElement|null
      */
     private function getCrawlerNode(Crawler $crawler, $num = 0)
     {

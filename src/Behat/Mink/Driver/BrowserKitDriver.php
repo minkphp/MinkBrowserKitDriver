@@ -644,7 +644,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @throws DriverException If the response cannot be converted to a BrowserKit response
      */
-    protected function convertImplementationResponse($response)
+    private function convertImplementationResponse($response)
     {
         if ($response instanceof Response) {
             return $response;

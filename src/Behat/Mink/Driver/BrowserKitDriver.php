@@ -297,7 +297,13 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function getCookiePath()
     {
-        return dirname(parse_url($this->getCurrentUrl(), PHP_URL_PATH));
+        $path = dirname(parse_url($this->getCurrentUrl(), PHP_URL_PATH));
+
+        if ('\\' === DIRECTORY_SEPARATOR) {
+            $path = str_replace('\\', '/', $path);
+        }
+
+        return $path;
     }
 
     /**

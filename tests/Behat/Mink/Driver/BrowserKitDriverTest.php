@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Client;
 /**
  * @group browserkitdriver
  */
-class BrowserKitDriverTest extends HeadlessDriverTest
+class BrowserKitDriverTest extends GeneralDriverTest
 {
     protected static function getDriver()
     {

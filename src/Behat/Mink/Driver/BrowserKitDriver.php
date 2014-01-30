@@ -420,7 +420,7 @@ class BrowserKitDriver extends CoreDriver
      * @param string $xpath
      * @param string $name
      *
-     * @return mixed
+     * @return string|null
      */
     public function getAttribute($xpath, $name)
     {
@@ -588,6 +588,7 @@ class BrowserKitDriver extends CoreDriver
      * Submits the form.
      *
      * @param string $xpath Xpath.
+     *
      * @throws ElementNotFoundException When element wasn't found
      */
     public function submitForm($xpath)
@@ -716,35 +717,15 @@ class BrowserKitDriver extends CoreDriver
 
         $fieldNode = $this->getCrawlerNode($crawler);
         $fieldName = str_replace('[]', '', $fieldNode->getAttribute('name'));
-        $formNode  = $fieldNode;
 
-        // we will access our element by name next, but that's not unique, so we need to know which is our element
-        $elements = $this->getCrawler()->filterXPath('//*[@name=\''.$fieldNode->getAttribute('name').'\']');
-        $position = 0;
-        if (count($elements) > 1) {
-            // more than one element contains this name !
-            // so we need to find the position of $fieldNode
-            foreach ($elements as $key => $element) {
-                if ($element->getNodePath() === $fieldNode->getNodePath()) {
-                    $position = $key;
-                    break;
-                }
-            }
-        }
-
-        do {
-            // use the ancestor form element
-            if (null === $formNode = $formNode->parentNode) {
-                throw new \LogicException('The selected node does not have a form ancestor.');
-            }
-        } while ('form' != $formNode->nodeName);
+        $formNode = $this->getFormNode($fieldNode);
 
         $formId = $this->getFormNodeId($formNode);
 
         // check if form already exists
         if (isset($this->forms[$formId])) {
             if (is_array($this->forms[$formId][$fieldName])) {
-                return $this->forms[$formId][$fieldName][$position];
+                return $this->forms[$formId][$fieldName][$this->getFieldPosition($fieldNode)];
             }
 
             return $this->forms[$formId][$fieldName];
@@ -759,10 +740,59 @@ class BrowserKitDriver extends CoreDriver
         $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());
 
         if (is_array($this->forms[$formId][$fieldName])) {
-            return $this->forms[$formId][$fieldName][$position];
+            return $this->forms[$formId][$fieldName][$this->getFieldPosition($fieldNode)];
         }
 
         return $this->forms[$formId][$fieldName];
+    }
+
+    /**
+     * @param \DOMElement $element
+     *
+     * @return \DOMElement
+     *
+     * @throws \LogicException if the form node cannot be found
+     */
+    private function getFormNode(\DOMElement $element)
+    {
+        $formNode = $element;
+
+        do {
+            // use the ancestor form element
+            if (null === $formNode = $formNode->parentNode) {
+                throw new \LogicException('The selected node does not have a form ancestor.');
+            }
+        } while ('form' != $formNode->nodeName);
+
+        return $formNode;
+    }
+
+    /**
+     * Gets the position of the field node among elements with the same name
+     *
+     * BrowserKit uses the field name as index to find the field in its Form object.
+     * When multiple fields have the same name (checkboxes for instance), it will return
+     * an array of elements in the order they appear in the DOM.
+     *
+     * @param \DOMElement $fieldNode
+     *
+     * @return integer
+     */
+    private function getFieldPosition(\DOMElement $fieldNode)
+    {
+        $elements = $this->getCrawler()->filterXPath('//*[@name=\''.$fieldNode->getAttribute('name').'\']');
+
+        if (count($elements) > 1) {
+            // more than one element contains this name !
+            // so we need to find the position of $fieldNode
+            foreach ($elements as $key => $element) {
+                if ($element->getNodePath() === $fieldNode->getNodePath()) {
+                    return $key;
+                }
+            }
+        }
+
+        return 0;
     }
 
     private function submit(Form $form)
@@ -788,11 +818,11 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Determines if a node can submit a form.
      *
-     * @param \DOMNode $node Node.
+     * @param \DOMElement $node Node.
      *
      * @return boolean
      */
-    private function canSubmitForm(\DOMNode $node)
+    private function canSubmitForm(\DOMElement $node)
     {
         $type = $node->hasAttribute('type') ? $node->getAttribute('type') : null;
 
@@ -808,7 +838,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param \DOMElement $form
      *
-     * @return mixed
+     * @return string
      */
     private function getFormNodeId(\DOMElement $form)
     {
@@ -820,7 +850,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param \DOMElement $form
      *
-     * @return \DOMElement
+     * @return \DOMElement|null
      */
     private function findFormButton(\DOMElement $form)
     {
@@ -871,7 +901,7 @@ class BrowserKitDriver extends CoreDriver
      * @param Crawler $crawler
      * @param integer $num     number of node from crawler
      *
-     * @return \DOMNode
+     * @return \DOMElement|null
      */
     private function getCrawlerNode(Crawler $crawler, $num = 0)
     {

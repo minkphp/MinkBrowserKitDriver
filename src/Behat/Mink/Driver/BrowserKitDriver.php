@@ -810,11 +810,11 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Determines if a node can submit a form.
      *
-     * @param \DOMNode $node Node.
+     * @param \DOMElement $node Node.
      *
      * @return boolean
      */
-    private function canSubmitForm(\DOMNode $node)
+    private function canSubmitForm(\DOMElement $node)
     {
         $type = $node->hasAttribute('type') ? $node->getAttribute('type') : null;
 
@@ -893,7 +893,7 @@ class BrowserKitDriver extends CoreDriver
      * @param Crawler $crawler
      * @param integer $num     number of node from crawler
      *
-     * @return \DOMNode
+     * @return \DOMElement
      */
     private function getCrawlerNode(Crawler $crawler, $num = 0)
     {

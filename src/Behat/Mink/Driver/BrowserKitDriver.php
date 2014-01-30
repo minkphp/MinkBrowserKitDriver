@@ -753,6 +753,17 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getFormNode(\DOMElement $element)
     {
+        if ($element->hasAttribute('form')) {
+            $formId = $element->getAttribute('form');
+            $formNode = $element->ownerDocument->getElementById($formId);
+
+            if (null === $formNode) {
+                throw new DriverException(sprintf('The selected node has an invalid form attribute (%s).', $formId));
+            }
+
+            return $formNode;
+        }
+
         $formNode = $element;
 
         do {
@@ -760,7 +771,7 @@ class BrowserKitDriver extends CoreDriver
             if (null === $formNode = $formNode->parentNode) {
                 throw new DriverException('The selected node does not have a form ancestor.');
             }
-        } while ('form' != $formNode->nodeName);
+        } while ('form' !== $formNode->nodeName);
 
         return $formNode;
     }
@@ -852,14 +863,16 @@ class BrowserKitDriver extends CoreDriver
      */
     private function findFormButton(\DOMElement $form)
     {
-        $document = new \DOMDocument('1.0', 'UTF-8');
-        $node     = $document->importNode($form, true);
-        $root     = $document->appendChild($document->createElement('_root'));
+        $xpath = new \DOMXPath($form->ownerDocument);
 
-        $root->appendChild($node);
-        $xpath = new \DOMXPath($document);
+        $buttonXpath = 'descendant::input[not(@form)] | descendant::button[not(@form)]';
 
-        foreach ($xpath->query('descendant::input | descendant::button', $root) as $node) {
+        if ($form->hasAttribute('id')) {
+            $formId = Crawler::xpathLiteral($form->getAttribute('id'));
+            $buttonXpath .= sprintf(' | //input[@form=%s] | //button[@form=%s]', $formId, $formId);
+        }
+
+        foreach ($xpath->query($buttonXpath, $form) as $node) {
             if ($this->canSubmitForm($node)) {
                 return $node;
             }

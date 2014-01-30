@@ -16,6 +16,7 @@ use Symfony\Component\DomCrawler\Field\FormField;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
+use Symfony\Component\HttpKernel\Client as HttpKernelClient;
 
 /*
  * This file is part of the Behat\Mink.
@@ -42,12 +43,17 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Initializes BrowserKit driver.
      *
-     * @param Client $client BrowserKit client instance
+     * @param Client      $client  BrowserKit client instance
+     * @param string|null $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(Client $client = null)
+    public function __construct(Client $client = null, $baseUrl = null)
     {
         $this->client = $client;
         $this->client->followRedirects(true);
+
+        if ($baseUrl !== null && $client instanceof HttpKernelClient) {
+            $client->setServerParameter('SCRIPT_FILENAME', parse_url($baseUrl, PHP_URL_PATH));
+        }
     }
 
     /**

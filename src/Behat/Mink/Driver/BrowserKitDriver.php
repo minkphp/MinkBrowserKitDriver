@@ -36,6 +36,7 @@ class BrowserKitDriver extends CoreDriver
     private $session;
     private $client;
     private $forms = array();
+    private $serverParameters = array();
     private $started = false;
     private $removeScriptFromUrl = true;
     private $removeHostFromUrl = false;
@@ -122,6 +123,7 @@ class BrowserKitDriver extends CoreDriver
         $this->client->restart();
         $this->started = false;
         $this->forms = array();
+        $this->serverParameters = array();
     }
 
     /**
@@ -130,6 +132,7 @@ class BrowserKitDriver extends CoreDriver
     public function reset()
     {
         $this->client->getCookieJar()->clear();
+        $this->serverParameters = array();
     }
 
     /**
@@ -139,7 +142,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function visit($url)
     {
-        $this->client->request('GET', $this->prepareUrl($url));
+        $this->client->request('GET', $this->prepareUrl($url), array(), array(), $this->serverParameters);
         $this->forms = array();
     }
 
@@ -211,8 +214,14 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setBasicAuth($user, $password)
     {
-        $this->client->setServerParameter('PHP_AUTH_USER', $user);
-        $this->client->setServerParameter('PHP_AUTH_PW', $password);
+        if (false === $user) {
+            unset($this->serverParameters['PHP_AUTH_USER'], $this->serverParameters['PHP_AUTH_PW']);
+
+            return;
+        }
+
+        $this->serverParameters['PHP_AUTH_USER'] = $user;
+        $this->serverParameters['PHP_AUTH_PW'] = $password;
     }
 
     /**
@@ -231,7 +240,7 @@ class BrowserKitDriver extends CoreDriver
             $headerParam = 'HTTP_' . str_replace('-', '_', $uppercaseName);
         }
 
-        $this->client->setServerParameter($headerParam, $value);
+        $this->serverParameters[$headerParam] = $value;
     }
 
     /**

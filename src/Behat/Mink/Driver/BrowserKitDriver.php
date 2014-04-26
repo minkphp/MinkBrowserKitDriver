@@ -4,7 +4,6 @@ namespace Behat\Mink\Driver;
 
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
-use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Session;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
@@ -331,9 +330,9 @@ class BrowserKitDriver extends CoreDriver
 
         if (isset($allValues[$name])) {
             return $allValues[$name];
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -525,12 +524,12 @@ class BrowserKitDriver extends CoreDriver
      * @param string $xpath
      *
      * @return Boolean
-     * @throws ElementNotFoundException When element wasn't found
+     * @throws DriverException When element wasn't found
      */
     public function isSelected($xpath)
     {
         if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException($this->session, 'option', 'xpath', $xpath);
+            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
         }
 
         $optionValue = $this->getCrawlerNode($crawler->eq(0))->getAttribute('value');
@@ -545,13 +544,13 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string $xpath
      *
-     * @throws ElementNotFoundException When element wasn't found
+     * @throws DriverException When element wasn't found
      * @throws DriverException When attempted to click on not allowed element
      */
     public function click($xpath)
     {
         if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException($this->session, 'link or button', 'xpath', $xpath);
+            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
         }
 
         $node = $nodes->eq(0);
@@ -598,12 +597,12 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string $xpath Xpath.
      *
-     * @throws ElementNotFoundException When element wasn't found
+     * @throws DriverException When element wasn't found
      */
     public function submitForm($xpath)
     {
         if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException($this->session, 'form', 'xpath', $xpath);
+            throw new DriverException(sprintf('There is no form matching XPath "%s"', $xpath));
         }
 
         $this->submit($nodes->eq(0)->form());
@@ -715,12 +714,12 @@ class BrowserKitDriver extends CoreDriver
      *
      * @return FormField
      *
-     * @throws ElementNotFoundException
+     * @throws DriverException
      */
     protected function getFormField($xpath)
     {
         if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException($this->session, 'form field', 'xpath', $xpath);
+            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
         }
 
         $fieldNode = $this->getCrawlerNode($crawler);
@@ -740,7 +739,7 @@ class BrowserKitDriver extends CoreDriver
 
         // find form button
         if (null === $buttonNode = $this->findFormButton($formNode)) {
-            throw new ElementNotFoundException($this->session, 'form submit button for field', 'xpath', $xpath);
+            throw new DriverException(sprintf('There is no form submit button for field matching XPath "%s"', $xpath));
         }
 
         $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());

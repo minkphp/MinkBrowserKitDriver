@@ -223,24 +223,15 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setRequestHeader($name, $value)
     {
-        $nameMap = array(
-            'accept' => 'HTTP_ACCEPT',
-            'accept-charset' => 'HTTP_ACCEPT_CHARSET',
-            'accept-encoding' => 'HTTP_ACCEPT_ENCODING',
-            'accept-language' => 'HTTP_ACCEPT_LANGUAGE',
-            'connection' => 'HTTP_CONNECTION',
-            'host' => 'HTTP_HOST',
-            'user-agent' => 'HTTP_USER_AGENT',
-            'authorization' => 'PHP_AUTH_DIGEST',
-        );
+        $uppercaseName = strtoupper($name);
 
-        $lowercaseName = strtolower($name);
-
-        if (isset($nameMap[$lowercaseName])) {
-            $name = $nameMap[$lowercaseName];
+        if ('AUTHORIZATION' === $uppercaseName) {
+            $headerParam = 'PHP_AUTH_DIGEST';
+        } else {
+            $headerParam = 'HTTP_' . str_replace('-', '_', $uppercaseName);
         }
 
-        $this->client->setServerParameter($name, $value);
+        $this->client->setServerParameter($headerParam, $value);
     }
 
     /**

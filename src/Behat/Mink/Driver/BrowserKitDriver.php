@@ -432,13 +432,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function check($xpath)
     {
-        $field = $this->getFormField($xpath);
-
-        if (!$field instanceof ChoiceFormField) {
-            throw new DriverException(sprintf('Impossible to check the element with XPath "%s" as it is not a checkbox', $xpath));
-        }
-
-        $field->tick();
+        $this->getCheckboxField($xpath)->tick();
     }
 
     /**
@@ -446,13 +440,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function uncheck($xpath)
     {
-        $field = $this->getFormField($xpath);
-
-        if (!$field instanceof ChoiceFormField) {
-            throw new DriverException(sprintf('Impossible to uncheck the element with XPath "%s" as it is not a checkbox', $xpath));
-        }
-
-        $field->untick();
+        $this->getCheckboxField($xpath)->untick();
     }
 
     /**
@@ -696,6 +684,26 @@ class BrowserKitDriver extends CoreDriver
         }
 
         return $this->forms[$formId][$fieldName];
+    }
+
+    /**
+     * Returns the checkbox field from xpath query, ensuring it is valid.
+     *
+     * @param string $xpath
+     *
+     * @return ChoiceFormField
+     *
+     * @throws DriverException when the field is not a checkbox
+     */
+    private function getCheckboxField($xpath)
+    {
+        $field = $this->getFormField($xpath);
+
+        if (!$field instanceof ChoiceFormField) {
+            throw new DriverException(sprintf('Impossible to check the element with XPath "%s" as it is not a checkbox', $xpath));
+        }
+
+        return $field;
     }
 
     /**

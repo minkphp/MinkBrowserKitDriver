@@ -348,7 +348,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getTagName($xpath)
     {
-        return $this->getCrawlerNode($this->getCrawler()->filterXPath($xpath)->eq(0))->nodeName;
+        return $this->getCrawlerNode($this->getFilteredCrawler($xpath))->nodeName;
     }
 
     /**
@@ -356,11 +356,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getText($xpath)
     {
-        if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
-        }
-
-        $text = $crawler->eq(0)->text();
+        $text = $this->getFilteredCrawler($xpath)->text();
         $text = str_replace("\n", ' ', $text);
         $text = preg_replace('/ {2,}/', ' ', $text);
 
@@ -372,7 +368,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getHtml($xpath)
     {
-        $node = $this->getCrawlerNode($this->getCrawler()->filterXPath($xpath)->eq(0));
+        $node = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
         $text = $node->ownerDocument->saveXML($node);
 
         // cut the tag itself (making innerHTML out of outerHTML)
@@ -386,7 +382,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getAttribute($xpath, $name)
     {
-        $node = $this->getCrawler()->filterXPath($xpath)->eq(0);
+        $node = $this->getFilteredCrawler($xpath);
 
         if ($this->getCrawlerNode($node)->hasAttribute($name)) {
             return $node->attr($name);
@@ -451,9 +447,8 @@ class BrowserKitDriver extends CoreDriver
         $field = $this->getFormField($xpath);
 
         if (!$field instanceof ChoiceFormField) {
-            throw new DriverException(sprintf('Impossible to select an option on the element with XPath "%s" as it is not a select', $xpath));
+            throw new DriverException(sprintf('Impossible to select an option on the element with XPath "%s" as it is not a select or radio input', $xpath));
         }
-
 
         if ($multiple) {
             $oldValue   = (array) $field->getValue();
@@ -469,11 +464,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function isSelected($xpath)
     {
-        if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
-        }
-
-        $optionValue = $this->getCrawlerNode($crawler->eq(0))->getAttribute('value');
+        $optionValue = $this->getCrawlerNode($this->getFilteredCrawler($xpath))->getAttribute('value');
         $selectField = $this->getFormField('(' . $xpath . ')/ancestor-or-self::*[local-name()="select"]');
         $selectValue = $selectField->getValue();
 
@@ -485,11 +476,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function click($xpath)
     {
-        if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
-        }
-
-        $node = $nodes->eq(0);
+        $node = $this->getFilteredCrawler($xpath);
         $crawlerNode = $this->getCrawlerNode($node);
         $tagName = $crawlerNode->nodeName;
 
@@ -532,12 +519,10 @@ class BrowserKitDriver extends CoreDriver
      */
     public function submitForm($xpath)
     {
-        if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-            throw new DriverException(sprintf('There is no form matching XPath "%s"', $xpath));
-        }
+        $crawler = $this->getFilteredCrawler($xpath);
 
         try {
-            $this->submit($nodes->eq(0)->form());
+            $this->submit($crawler->form());
         } catch (\LogicException $e) {
             throw new DriverException($e->getMessage(), 0, $e);
         }
@@ -653,11 +638,7 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function getFormField($xpath)
     {
-        if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
-        }
-
-        $fieldNode = $this->getCrawlerNode($crawler);
+        $fieldNode = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
         $fieldName = str_replace('[]', '', $fieldNode->getAttribute('name'));
 
         $formNode = $this->getFormNode($fieldNode);
@@ -915,6 +896,24 @@ class BrowserKitDriver extends CoreDriver
         }
 
         throw new DriverException('The element does not exist');
+    }
+
+    /**
+     * Returns a crawler filtered for the given XPath, requiring at least 1 result.
+     *
+     * @param string $xpath
+     *
+     * @return Crawler
+     *
+     * @throws DriverException when no matching elements are found
+     */
+    private function getFilteredCrawler($xpath)
+    {
+        if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
+            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
+        }
+
+        return $crawler;
     }
 
     /**

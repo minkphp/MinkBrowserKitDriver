@@ -13,6 +13,7 @@ use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Field;
 use Symfony\Component\DomCrawler\Field\FormField;
+use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
@@ -823,6 +824,13 @@ class BrowserKitDriver extends CoreDriver
         foreach ($form->getFiles() as $name => $field) {
             if (empty($field['name']) && empty($field['tmp_name'])) {
                 $form->remove($name);
+            }
+        }
+
+        foreach ($form->all() as $field) {
+            // Add a fix for https://github.com/symfony/symfony/pull/10733 to support Symfony versions which are not fixed
+            if ($field instanceof TextareaFormField && null === $field->getValue()) {
+                $field->setValue('');
             }
         }
 

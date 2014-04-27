@@ -394,10 +394,16 @@ class BrowserKitDriver extends CoreDriver
      * @param string $xpath
      *
      * @return string
+     *
+     * @throws DriverException When element wasn't found
      */
     public function getText($xpath)
     {
-        $text = $this->getCrawler()->filterXPath($xpath)->eq(0)->text();
+        if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
+            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
+        }
+
+        $text = $crawler->eq(0)->text();
         $text = str_replace("\n", ' ', $text);
         $text = preg_replace('/ {2,}/', ' ', $text);
 
@@ -638,7 +644,11 @@ class BrowserKitDriver extends CoreDriver
             throw new DriverException(sprintf('There is no form matching XPath "%s"', $xpath));
         }
 
-        $this->submit($nodes->eq(0)->form());
+        try {
+            $this->submit($nodes->eq(0)->form());
+        } catch (\LogicException $e) {
+            throw new DriverException($e->getMessage(), 0, $e);
+        }
     }
 
     /**
@@ -980,7 +990,9 @@ class BrowserKitDriver extends CoreDriver
      * @param Crawler $crawler
      * @param integer $num     number of node from crawler
      *
-     * @return \DOMElement|null
+     * @return \DOMElement
+     *
+     * @throws DriverException when the node does not exist
      */
     private function getCrawlerNode(Crawler $crawler, $num = 0)
     {
@@ -990,7 +1002,7 @@ class BrowserKitDriver extends CoreDriver
             }
         }
 
-        return null;
+        throw new DriverException('The element does not exist');
     }
 
     /**

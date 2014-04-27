@@ -36,6 +36,7 @@ class BrowserKitDriver extends CoreDriver
     private $session;
     private $client;
     private $forms = array();
+    private $serverParameters = array();
     private $started = false;
     private $removeScriptFromUrl = true;
     private $removeHostFromUrl = false;
@@ -122,6 +123,7 @@ class BrowserKitDriver extends CoreDriver
         $this->client->restart();
         $this->started = false;
         $this->forms = array();
+        $this->serverParameters = array();
     }
 
     /**
@@ -130,6 +132,7 @@ class BrowserKitDriver extends CoreDriver
     public function reset()
     {
         $this->client->getCookieJar()->clear();
+        $this->serverParameters = array();
     }
 
     /**
@@ -139,7 +142,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function visit($url)
     {
-        $this->client->request('GET', $this->prepareUrl($url));
+        $this->client->request('GET', $this->prepareUrl($url), array(), array(), $this->serverParameters);
         $this->forms = array();
     }
 
@@ -211,8 +214,14 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setBasicAuth($user, $password)
     {
-        $this->client->setServerParameter('PHP_AUTH_USER', $user);
-        $this->client->setServerParameter('PHP_AUTH_PW', $password);
+        if (false === $user) {
+            unset($this->serverParameters['PHP_AUTH_USER'], $this->serverParameters['PHP_AUTH_PW']);
+
+            return;
+        }
+
+        $this->serverParameters['PHP_AUTH_USER'] = $user;
+        $this->serverParameters['PHP_AUTH_PW'] = $password;
     }
 
     /**
@@ -223,24 +232,15 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setRequestHeader($name, $value)
     {
-        $nameMap = array(
-            'accept' => 'HTTP_ACCEPT',
-            'accept-charset' => 'HTTP_ACCEPT_CHARSET',
-            'accept-encoding' => 'HTTP_ACCEPT_ENCODING',
-            'accept-language' => 'HTTP_ACCEPT_LANGUAGE',
-            'connection' => 'HTTP_CONNECTION',
-            'host' => 'HTTP_HOST',
-            'user-agent' => 'HTTP_USER_AGENT',
-            'authorization' => 'PHP_AUTH_DIGEST',
-        );
+        $contentHeaders = array('CONTENT_LENGTH' => true, 'CONTENT_MD5' => true, 'CONTENT_TYPE' => true);
+        $name = str_replace('-', '_', strtoupper($name));
 
-        $lowercaseName = strtolower($name);
-
-        if (isset($nameMap[$lowercaseName])) {
-            $name = $nameMap[$lowercaseName];
+        // CONTENT_* are not prefixed with HTTP_ in PHP when building $_SERVER
+        if (!isset($contentHeaders[$name])) {
+            $name = 'HTTP_' . $name;
         }
 
-        $this->client->setServerParameter($name, $value);
+        $this->serverParameters[$name] = $value;
     }
 
     /**

@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the Behat\Mink.
+ * (c) Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Behat\Mink\Driver;
 
 use Behat\Mink\Element\NodeElement;
@@ -19,14 +27,6 @@ use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 use Symfony\Component\HttpKernel\Client as HttpKernelClient;
-
-/*
- * This file is part of the Behat\Mink.
- * (c) Konstantin Kudryashov <ever.zet@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 /**
  * Symfony2 BrowserKit driver.
@@ -70,9 +70,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Sets driver's current session.
-     *
-     * @param Session $session
+     * {@inheritdoc}
      */
     public function setSession(Session $session)
     {
@@ -90,7 +88,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Tells driver to remove scriptname from URL.
+     * Tells driver to remove script name from URL.
      *
      * @param Boolean $remove
      */
@@ -100,7 +98,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Starts driver.
+     * {@inheritdoc}
      */
     public function start()
     {
@@ -108,9 +106,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Checks whether driver is started.
-     *
-     * @return Boolean
+     * {@inheritdoc}
      */
     public function isStarted()
     {
@@ -118,7 +114,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Stops driver.
+     * {@inheritdoc}
      */
     public function stop()
     {
@@ -129,7 +125,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Resets driver.
+     * {@inheritdoc}
      */
     public function reset()
     {
@@ -138,9 +134,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Visit specified URL.
-     *
-     * @param string $url url of the page
+     * {@inheritdoc}
      */
     public function visit($url)
     {
@@ -149,11 +143,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns current URL address.
-     *
-     * @return string
-     *
-     * @throws DriverException If the BrowserKit client returns an unsupported request on BrowserKit 2.2.x and older
+     * {@inheritdoc}
      */
     public function getCurrentUrl()
     {
@@ -182,7 +172,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Reloads current page.
+     * {@inheritdoc}
      */
     public function reload()
     {
@@ -191,7 +181,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Moves browser forward 1 page.
+     * {@inheritdoc}
      */
     public function forward()
     {
@@ -200,7 +190,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Moves browser backward 1 page.
+     * {@inheritdoc}
      */
     public function back()
     {
@@ -209,10 +199,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Sets HTTP Basic authentication parameters
-     *
-     * @param string|Boolean $user     user name or false to disable authentication
-     * @param string         $password password
+     * {@inheritdoc}
      */
     public function setBasicAuth($user, $password)
     {
@@ -227,10 +214,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Sets specific request header on client.
-     *
-     * @param string $name
-     * @param string $value
+     * {@inheritdoc}
      */
     public function setRequestHeader($name, $value)
     {
@@ -246,9 +230,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns last response headers.
-     *
-     * @return array
+     * {@inheritdoc}
      */
     public function getResponseHeaders()
     {
@@ -256,10 +238,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Sets cookie.
-     *
-     * @param string $name
-     * @param string $value
+     * {@inheritdoc}
      */
     public function setCookie($name, $value = null)
     {
@@ -309,11 +288,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns cookie by name.
-     *
-     * @param string $name
-     *
-     * @return string|null
+     * {@inheritdoc}
      */
     public function getCookie($name)
     {
@@ -338,9 +313,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns last response status code.
-     *
-     * @return integer
+     * {@inheritdoc}
      */
     public function getStatusCode()
     {
@@ -348,9 +321,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns last response content.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getContent()
     {
@@ -358,11 +329,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Finds elements with specified XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return array array of NodeElements
+     * {@inheritdoc}
      */
     public function find($xpath)
     {
@@ -377,11 +344,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns element's tag name by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getTagName($xpath)
     {
@@ -389,13 +352,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns element's text by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return string
-     *
-     * @throws DriverException When element wasn't found
+     * {@inheritdoc}
      */
     public function getText($xpath)
     {
@@ -411,11 +368,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns element's html by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getHtml($xpath)
     {
@@ -429,12 +382,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns element's attribute by it's XPath query.
-     *
-     * @param string $xpath
-     * @param string $name
-     *
-     * @return string|null
+     * {@inheritdoc}
      */
     public function getAttribute($xpath, $name)
     {
@@ -448,11 +396,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Returns element's value by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getValue($xpath)
     {
@@ -476,10 +420,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Sets element's value by it's XPath query.
-     *
-     * @param string $xpath
-     * @param string $value
+     * {@inheritdoc}
      */
     public function setValue($xpath, $value)
     {
@@ -487,11 +428,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Checks checkbox by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @throws DriverException
+     * {@inheritdoc}
      */
     public function check($xpath)
     {
@@ -505,11 +442,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Unchecks checkbox by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @throws DriverException
+     * {@inheritdoc}
      */
     public function uncheck($xpath)
     {
@@ -523,13 +456,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Selects option from select field located by it's XPath query.
-     *
-     * @param string  $xpath
-     * @param string  $value
-     * @param Boolean $multiple
-     *
-     * @throws DriverException
+     * {@inheritdoc}
      */
     public function selectOption($xpath, $value, $multiple = false)
     {
@@ -550,12 +477,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Checks whether select option, located by it's XPath query, is selected.
-     *
-     * @param string $xpath
-     *
-     * @return Boolean
-     * @throws DriverException When element wasn't found
+     * {@inheritdoc}
      */
     public function isSelected($xpath)
     {
@@ -571,12 +493,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Clicks button or link located by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @throws DriverException When element wasn't found
-     * @throws DriverException When attempted to click on not allowed element
+     * {@inheritdoc}
      */
     public function click($xpath)
     {
@@ -601,11 +518,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Checks whether checkbox checked located by it's XPath query.
-     *
-     * @param string $xpath
-     *
-     * @return Boolean
+     * {@inheritdoc}
      */
     public function isChecked($xpath)
     {
@@ -613,12 +526,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Attaches file path to file field located by it's XPath query.
-     *
-     * @param string $xpath
-     * @param string $path
-     *
-     * @throws DriverException
+     * {@inheritdoc}
      */
     public function attachFile($xpath, $path)
     {
@@ -632,11 +540,7 @@ class BrowserKitDriver extends CoreDriver
     }
 
     /**
-     * Submits the form.
-     *
-     * @param string $xpath Xpath.
-     *
-     * @throws DriverException When element wasn't found
+     * {@inheritdoc}
      */
     public function submitForm($xpath)
     {

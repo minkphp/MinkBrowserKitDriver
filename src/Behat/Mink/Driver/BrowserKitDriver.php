@@ -278,7 +278,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string $name Cookie name.
      */
-    protected function deleteCookie($name)
+    private function deleteCookie($name)
     {
         $path = $this->getCookiePath();
         $jar = $this->client->getCookieJar();
@@ -297,7 +297,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @return string
      */
-    protected function getCookiePath()
+    private function getCookiePath()
     {
         $path = dirname(parse_url($this->getCurrentUrl(), PHP_URL_PATH));
 

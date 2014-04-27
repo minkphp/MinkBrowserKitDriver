@@ -10,8 +10,10 @@ use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\DomCrawler\Field;
+use Symfony\Component\DomCrawler\Field\ChoiceFormField;
+use Symfony\Component\DomCrawler\Field\FileFormField;
 use Symfony\Component\DomCrawler\Field\FormField;
+use Symfony\Component\DomCrawler\Field\InputFormField;
 use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
@@ -460,7 +462,7 @@ class BrowserKitDriver extends CoreDriver
 
         $value = $field->getValue();
 
-        if ($field instanceof Field\ChoiceFormField && 'checkbox' === $field->getType()) {
+        if ($field instanceof ChoiceFormField && 'checkbox' === $field->getType()) {
             $value = null !== $value;
         }
 
@@ -482,20 +484,36 @@ class BrowserKitDriver extends CoreDriver
      * Checks checkbox by it's XPath query.
      *
      * @param string $xpath
+     *
+     * @throws DriverException
      */
     public function check($xpath)
     {
-        $this->getFormField($xpath)->tick();
+        $field = $this->getFormField($xpath);
+
+        if (!$field instanceof ChoiceFormField) {
+            throw new DriverException(sprintf('Impossible to check the element with XPath "%s" as it is not a checkbox', $xpath));
+        }
+
+        $field->tick();
     }
 
     /**
      * Unchecks checkbox by it's XPath query.
      *
      * @param string $xpath
+     *
+     * @throws DriverException
      */
     public function uncheck($xpath)
     {
-        $this->getFormField($xpath)->untick();
+        $field = $this->getFormField($xpath);
+
+        if (!$field instanceof ChoiceFormField) {
+            throw new DriverException(sprintf('Impossible to uncheck the element with XPath "%s" as it is not a checkbox', $xpath));
+        }
+
+        $field->untick();
     }
 
     /**
@@ -504,10 +522,17 @@ class BrowserKitDriver extends CoreDriver
      * @param string  $xpath
      * @param string  $value
      * @param Boolean $multiple
+     *
+     * @throws DriverException
      */
     public function selectOption($xpath, $value, $multiple = false)
     {
         $field = $this->getFormField($xpath);
+
+        if (!$field instanceof ChoiceFormField) {
+            throw new DriverException(sprintf('Impossible to select an option on the element with XPath "%s" as it is not a select', $xpath));
+        }
+
 
         if ($multiple) {
             $oldValue   = (array) $field->getValue();
@@ -586,10 +611,18 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string $xpath
      * @param string $path
+     *
+     * @throws DriverException
      */
     public function attachFile($xpath, $path)
     {
-        $this->getFormField($xpath)->upload($path);
+        $field = $this->getFormField($xpath);
+
+        if (!$field instanceof FileFormField) {
+            throw new DriverException(sprintf('Impossible to attach a file on the element with XPath "%s" as it is not a file input', $xpath));
+        }
+
+        $field->upload($path);
     }
 
     /**
@@ -932,7 +965,7 @@ class BrowserKitDriver extends CoreDriver
             $nodeReflection->setAccessible(true);
             $valueReflection->setAccessible(true);
 
-            if (!($field instanceof Field\InputFormField && in_array(
+            if (!($field instanceof InputFormField && in_array(
                 $nodeReflection->getValue($field)->getAttribute('type'),
                 array('submit', 'button', 'image')
             ))) {

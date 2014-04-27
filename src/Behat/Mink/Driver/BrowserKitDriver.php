@@ -4,15 +4,16 @@ namespace Behat\Mink\Driver;
 
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
-use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Session;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\DomCrawler\Field;
+use Symfony\Component\DomCrawler\Field\ChoiceFormField;
+use Symfony\Component\DomCrawler\Field\FileFormField;
 use Symfony\Component\DomCrawler\Field\FormField;
+use Symfony\Component\DomCrawler\Field\InputFormField;
 use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
@@ -331,9 +332,9 @@ class BrowserKitDriver extends CoreDriver
 
         if (isset($allValues[$name])) {
             return $allValues[$name];
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -461,7 +462,7 @@ class BrowserKitDriver extends CoreDriver
 
         $value = $field->getValue();
 
-        if ($field instanceof Field\ChoiceFormField && 'checkbox' === $field->getType()) {
+        if ($field instanceof ChoiceFormField && 'checkbox' === $field->getType()) {
             $value = null !== $value;
         }
 
@@ -483,20 +484,36 @@ class BrowserKitDriver extends CoreDriver
      * Checks checkbox by it's XPath query.
      *
      * @param string $xpath
+     *
+     * @throws DriverException
      */
     public function check($xpath)
     {
-        $this->getFormField($xpath)->tick();
+        $field = $this->getFormField($xpath);
+
+        if (!$field instanceof ChoiceFormField) {
+            throw new DriverException(sprintf('Impossible to check the element with XPath "%s" as it is not a checkbox', $xpath));
+        }
+
+        $field->tick();
     }
 
     /**
      * Unchecks checkbox by it's XPath query.
      *
      * @param string $xpath
+     *
+     * @throws DriverException
      */
     public function uncheck($xpath)
     {
-        $this->getFormField($xpath)->untick();
+        $field = $this->getFormField($xpath);
+
+        if (!$field instanceof ChoiceFormField) {
+            throw new DriverException(sprintf('Impossible to uncheck the element with XPath "%s" as it is not a checkbox', $xpath));
+        }
+
+        $field->untick();
     }
 
     /**
@@ -505,10 +522,17 @@ class BrowserKitDriver extends CoreDriver
      * @param string  $xpath
      * @param string  $value
      * @param Boolean $multiple
+     *
+     * @throws DriverException
      */
     public function selectOption($xpath, $value, $multiple = false)
     {
         $field = $this->getFormField($xpath);
+
+        if (!$field instanceof ChoiceFormField) {
+            throw new DriverException(sprintf('Impossible to select an option on the element with XPath "%s" as it is not a select', $xpath));
+        }
+
 
         if ($multiple) {
             $oldValue   = (array) $field->getValue();
@@ -525,12 +549,12 @@ class BrowserKitDriver extends CoreDriver
      * @param string $xpath
      *
      * @return Boolean
-     * @throws ElementNotFoundException When element wasn't found
+     * @throws DriverException When element wasn't found
      */
     public function isSelected($xpath)
     {
         if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException($this->session, 'option', 'xpath', $xpath);
+            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
         }
 
         $optionValue = $this->getCrawlerNode($crawler->eq(0))->getAttribute('value');
@@ -545,13 +569,13 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string $xpath
      *
-     * @throws ElementNotFoundException When element wasn't found
+     * @throws DriverException When element wasn't found
      * @throws DriverException When attempted to click on not allowed element
      */
     public function click($xpath)
     {
         if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException($this->session, 'link or button', 'xpath', $xpath);
+            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
         }
 
         $node = $nodes->eq(0);
@@ -587,10 +611,18 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string $xpath
      * @param string $path
+     *
+     * @throws DriverException
      */
     public function attachFile($xpath, $path)
     {
-        $this->getFormField($xpath)->upload($path);
+        $field = $this->getFormField($xpath);
+
+        if (!$field instanceof FileFormField) {
+            throw new DriverException(sprintf('Impossible to attach a file on the element with XPath "%s" as it is not a file input', $xpath));
+        }
+
+        $field->upload($path);
     }
 
     /**
@@ -598,12 +630,12 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string $xpath Xpath.
      *
-     * @throws ElementNotFoundException When element wasn't found
+     * @throws DriverException When element wasn't found
      */
     public function submitForm($xpath)
     {
         if (!count($nodes = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException($this->session, 'form', 'xpath', $xpath);
+            throw new DriverException(sprintf('There is no form matching XPath "%s"', $xpath));
         }
 
         $this->submit($nodes->eq(0)->form());
@@ -715,12 +747,12 @@ class BrowserKitDriver extends CoreDriver
      *
      * @return FormField
      *
-     * @throws ElementNotFoundException
+     * @throws DriverException
      */
     protected function getFormField($xpath)
     {
         if (!count($crawler = $this->getCrawler()->filterXPath($xpath))) {
-            throw new ElementNotFoundException($this->session, 'form field', 'xpath', $xpath);
+            throw new DriverException(sprintf('There is no element matching XPath "%s"', $xpath));
         }
 
         $fieldNode = $this->getCrawlerNode($crawler);
@@ -740,7 +772,7 @@ class BrowserKitDriver extends CoreDriver
 
         // find form button
         if (null === $buttonNode = $this->findFormButton($formNode)) {
-            throw new ElementNotFoundException($this->session, 'form submit button for field', 'xpath', $xpath);
+            throw new DriverException(sprintf('There is no form submit button for field matching XPath "%s"', $xpath));
         }
 
         $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());
@@ -933,7 +965,7 @@ class BrowserKitDriver extends CoreDriver
             $nodeReflection->setAccessible(true);
             $valueReflection->setAccessible(true);
 
-            if (!($field instanceof Field\InputFormField && in_array(
+            if (!($field instanceof InputFormField && in_array(
                 $nodeReflection->getValue($field)->getAttribute('type'),
                 array('submit', 'button', 'image')
             ))) {

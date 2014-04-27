@@ -232,15 +232,15 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setRequestHeader($name, $value)
     {
-        $uppercaseName = strtoupper($name);
+        $contentHeaders = array('CONTENT_LENGTH' => true, 'CONTENT_MD5' => true, 'CONTENT_TYPE' => true);
+        $name = str_replace('-', '_', strtoupper($name));
 
-        if ('AUTHORIZATION' === $uppercaseName) {
-            $headerParam = 'PHP_AUTH_DIGEST';
-        } else {
-            $headerParam = 'HTTP_' . str_replace('-', '_', $uppercaseName);
+        // CONTENT_* are not prefixed with HTTP_ in PHP when building $_SERVER
+        if (!isset($contentHeaders[$name])) {
+            $name = 'HTTP_' . $name;
         }
 
-        $this->serverParameters[$headerParam] = $value;
+        $this->serverParameters[$name] = $value;
     }
 
     /**

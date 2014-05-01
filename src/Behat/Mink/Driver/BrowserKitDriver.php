@@ -118,10 +118,8 @@ class BrowserKitDriver extends CoreDriver
      */
     public function stop()
     {
-        $this->client->restart();
+        $this->reset();
         $this->started = false;
-        $this->forms = array();
-        $this->serverParameters = array();
     }
 
     /**
@@ -129,7 +127,9 @@ class BrowserKitDriver extends CoreDriver
      */
     public function reset()
     {
-        $this->client->getCookieJar()->clear();
+        // Restarting the client resets the cookies and the history
+        $this->client->restart();
+        $this->forms = array();
         $this->serverParameters = array();
     }
 

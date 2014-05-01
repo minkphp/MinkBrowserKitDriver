@@ -482,6 +482,7 @@ class BrowserKitDriver extends CoreDriver
 
         if ('a' === $tagName) {
             $this->client->click($node->link());
+            $this->forms = array();
         } elseif ($this->canSubmitForm($crawlerNode)) {
             $this->submit($node->form());
         } elseif ($this->canResetForm($crawlerNode)) {

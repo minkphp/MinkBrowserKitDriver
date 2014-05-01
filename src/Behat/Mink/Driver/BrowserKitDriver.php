@@ -926,7 +926,7 @@ class BrowserKitDriver extends CoreDriver
         $crawler = $this->client->getCrawler();
 
         if (null === $crawler) {
-            throw new DriverException('Crawler can\'t be initialized. Did you started driver?');
+            throw new DriverException('Unable to access the response content before visiting a page');
         }
 
         return $crawler;

@@ -162,10 +162,7 @@ class BrowserKitDriver extends CoreDriver
         }
 
         if ($request === null) {
-            // If no request exists, return the current
-            // URL as null instead of running into a
-            // "method on non-object" error.
-            return null;
+            throw new DriverException('Unable to access the request before visiting a page');
         }
 
         return $request->getUri();

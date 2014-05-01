@@ -22,7 +22,7 @@
     },
 
     "require-dev": {
-        "silex/silex": "@dev"
+        "silex/silex": "~1.2"
     },
 
     "autoload": {

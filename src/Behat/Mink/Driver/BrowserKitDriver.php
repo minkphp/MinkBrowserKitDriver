@@ -49,7 +49,7 @@ class BrowserKitDriver extends CoreDriver
      * @param Client      $client  BrowserKit client instance
      * @param string|null $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(Client $client = null, $baseUrl = null)
+    public function __construct(Client $client, $baseUrl = null)
     {
         $this->client = $client;
         $this->client->followRedirects(true);

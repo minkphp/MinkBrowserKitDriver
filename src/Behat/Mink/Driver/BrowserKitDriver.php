@@ -61,6 +61,7 @@ class BrowserKitDriver extends CoreDriver
 
         if ($baseUrl !== null && $client instanceof HttpKernelClient) {
             $client->setServerParameter('SCRIPT_FILENAME', parse_url($baseUrl, PHP_URL_PATH));
+            $this->removeScriptFromUrl = false;
         }
     }
 
@@ -86,9 +87,15 @@ class BrowserKitDriver extends CoreDriver
      * Tells driver to remove hostname from URL.
      *
      * @param Boolean $remove
+     *
+     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
      */
     public function setRemoveHostFromUrl($remove = true)
     {
+        trigger_error(
+            'setRemoveHostFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
+            E_USER_DEPRECATED
+        );
         $this->removeHostFromUrl = (bool) $remove;
     }
 
@@ -96,9 +103,15 @@ class BrowserKitDriver extends CoreDriver
      * Tells driver to remove script name from URL.
      *
      * @param Boolean $remove
+     *
+     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
      */
     public function setRemoveScriptFromUrl($remove = true)
     {
+        trigger_error(
+            'setRemoveScriptFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
+            E_USER_DEPRECATED
+        );
         $this->removeScriptFromUrl = (bool) $remove;
     }
 

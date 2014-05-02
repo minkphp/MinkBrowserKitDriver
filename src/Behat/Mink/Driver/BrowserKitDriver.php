@@ -37,6 +37,10 @@ class BrowserKitDriver extends CoreDriver
 {
     private $session;
     private $client;
+
+    /**
+     * @var Form[]
+     */
     private $forms = array();
     private $serverParameters = array();
     private $started = false;
@@ -644,21 +648,14 @@ class BrowserKitDriver extends CoreDriver
         $formNode = $this->getFormNode($fieldNode);
         $formId = $this->getFormNodeId($formNode);
 
-        // check if form already exists
-        if (isset($this->forms[$formId])) {
-            if (is_array($this->forms[$formId][$fieldName])) {
-                return $this->forms[$formId][$fieldName][$this->getFieldPosition($fieldNode)];
+        if (!isset($this->forms[$formId])) {
+            // find form button
+            if (null === $buttonNode = $this->findFormButton($formNode)) {
+                throw new DriverException(sprintf('There is no form submit button for field matching XPath "%s"', $xpath));
             }
 
-            return $this->forms[$formId][$fieldName];
+            $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());
         }
-
-        // find form button
-        if (null === $buttonNode = $this->findFormButton($formNode)) {
-            throw new DriverException(sprintf('There is no form submit button for field matching XPath "%s"', $xpath));
-        }
-
-        $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());
 
         if (is_array($this->forms[$formId][$fieldName])) {
             return $this->forms[$formId][$fieldName][$this->getFieldPosition($fieldNode)];

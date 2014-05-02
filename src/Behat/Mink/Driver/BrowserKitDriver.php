@@ -45,7 +45,7 @@ class BrowserKitDriver extends CoreDriver
     private $forms = array();
     private $serverParameters = array();
     private $started = false;
-    private $removeScriptFromUrl = true;
+    private $removeScriptFromUrl = false;
     private $removeHostFromUrl = false;
 
     /**
@@ -61,7 +61,6 @@ class BrowserKitDriver extends CoreDriver
 
         if ($baseUrl !== null && $client instanceof HttpKernelClient) {
             $client->setServerParameter('SCRIPT_FILENAME', parse_url($baseUrl, PHP_URL_PATH));
-            $this->removeScriptFromUrl = false;
         }
     }
 

@@ -878,18 +878,18 @@ class BrowserKitDriver extends CoreDriver
      * Returns DOMElement from crawler instance.
      *
      * @param Crawler $crawler
-     * @param integer $num     number of node from crawler
      *
      * @return \DOMElement
      *
      * @throws DriverException when the node does not exist
      */
-    private function getCrawlerNode(Crawler $crawler, $num = 0)
+    private function getCrawlerNode(Crawler $crawler)
     {
-        foreach ($crawler as $i => $node) {
-            if ($num == $i) {
-                return $node;
-            }
+        $crawler->rewind();
+        $node = $crawler->current();
+
+        if (null !== $node) {
+            return $node;
         }
 
         throw new DriverException('The element does not exist');

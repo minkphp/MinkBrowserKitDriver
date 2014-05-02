@@ -122,10 +122,8 @@ class BrowserKitDriver extends CoreDriver
      */
     public function stop()
     {
-        $this->client->restart();
+        $this->reset();
         $this->started = false;
-        $this->forms = array();
-        $this->serverParameters = array();
     }
 
     /**
@@ -133,7 +131,9 @@ class BrowserKitDriver extends CoreDriver
      */
     public function reset()
     {
-        $this->client->getCookieJar()->clear();
+        // Restarting the client resets the cookies and the history
+        $this->client->restart();
+        $this->forms = array();
         $this->serverParameters = array();
     }
 
@@ -166,10 +166,7 @@ class BrowserKitDriver extends CoreDriver
         }
 
         if ($request === null) {
-            // If no request exists, return the current
-            // URL as null instead of running into a
-            // "method on non-object" error.
-            return null;
+            throw new DriverException('Unable to access the request before visiting a page');
         }
 
         return $request->getUri();
@@ -486,6 +483,7 @@ class BrowserKitDriver extends CoreDriver
 
         if ('a' === $tagName) {
             $this->client->click($node->link());
+            $this->forms = array();
         } elseif ($this->canSubmitForm($crawlerNode)) {
             $this->submit($node->form());
         } elseif ($this->canResetForm($crawlerNode)) {
@@ -893,7 +891,7 @@ class BrowserKitDriver extends CoreDriver
         $crawler = $this->client->getCrawler();
 
         if (null === $crawler) {
-            throw new DriverException('Crawler can\'t be initialized. Did you started driver?');
+            throw new DriverException('Unable to access the response content before visiting a page');
         }
 
         return $crawler;

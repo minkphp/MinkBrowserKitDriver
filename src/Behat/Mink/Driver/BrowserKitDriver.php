@@ -12,6 +12,7 @@ namespace Behat\Mink\Driver;
 
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
+use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\Mink\Session;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
@@ -489,8 +490,9 @@ class BrowserKitDriver extends CoreDriver
         } elseif ($this->canResetForm($crawlerNode)) {
             $this->resetForm($crawlerNode);
         } else {
-            $message = 'BrowserKit driver supports clicking on links and buttons only. But "%s" provided';
-            throw new DriverException(sprintf($message, $tagName));
+            $message = sprintf('%%s supports clicking on links and buttons only. But "%s" provided', $tagName);
+
+            throw new UnsupportedDriverActionException($message, $this);
         }
     }
 
@@ -690,7 +692,7 @@ class BrowserKitDriver extends CoreDriver
             $formId = $element->getAttribute('form');
             $formNode = $element->ownerDocument->getElementById($formId);
 
-            if (null === $formNode) {
+            if (null === $formNode || 'form' !== $formNode->nodeName) {
                 throw new DriverException(sprintf('The selected node has an invalid form attribute (%s).', $formId));
             }
 
@@ -728,6 +730,7 @@ class BrowserKitDriver extends CoreDriver
             // more than one element contains this name !
             // so we need to find the position of $fieldNode
             foreach ($elements as $key => $element) {
+                /** @var \DOMElement $element */
                 if ($element->getNodePath() === $fieldNode->getNodePath()) {
                     return $key;
                 }

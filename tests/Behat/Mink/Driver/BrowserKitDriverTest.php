@@ -7,7 +7,7 @@ use Behat\Mink\Session;
 use Symfony\Component\HttpKernel\Client;
 
 /**
- * @group browserkitdriver
+ * @group functional
  */
 class BrowserKitDriverTest extends GeneralDriverTest
 {

@@ -649,12 +649,7 @@ class BrowserKitDriver extends CoreDriver
         $formId = $this->getFormNodeId($formNode);
 
         if (!isset($this->forms[$formId])) {
-            // find form button
-            if (null === $buttonNode = $this->findFormButton($formNode)) {
-                throw new DriverException(sprintf('There is no form submit button for field matching XPath "%s"', $xpath));
-            }
-
-            $this->forms[$formId] = new Form($buttonNode, $this->getCurrentUrl());
+            $this->forms[$formId] = new Form($formNode, $this->getCurrentUrl());
         }
 
         if (is_array($this->forms[$formId][$fieldName])) {
@@ -820,33 +815,6 @@ class BrowserKitDriver extends CoreDriver
     private function getFormNodeId(\DOMElement $form)
     {
         return md5($form->getLineNo() . $form->getNodePath() . $form->nodeValue);
-    }
-
-    /**
-     * Finds form submit button inside form node.
-     *
-     * @param \DOMElement $form
-     *
-     * @return \DOMElement|null
-     */
-    private function findFormButton(\DOMElement $form)
-    {
-        $xpath = new \DOMXPath($form->ownerDocument);
-
-        $buttonXpath = 'descendant::input[not(@form)] | descendant::button[not(@form)]';
-
-        if ($form->hasAttribute('id')) {
-            $formId = Crawler::xpathLiteral($form->getAttribute('id'));
-            $buttonXpath .= sprintf(' | //input[@form=%s] | //button[@form=%s]', $formId, $formId);
-        }
-
-        foreach ($xpath->query($buttonXpath, $form) as $node) {
-            if ($this->canSubmitForm($node)) {
-                return $node;
-            }
-        }
-
-        return null;
     }
 
     /**

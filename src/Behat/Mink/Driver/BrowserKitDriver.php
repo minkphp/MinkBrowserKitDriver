@@ -382,13 +382,18 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getHtml($xpath)
     {
-        $node = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
-        $text = $node->ownerDocument->saveXML($node);
-
         // cut the tag itself (making innerHTML out of outerHTML)
-        $text = preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $text);
+        return preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $this->getOuterHtml($xpath));
+    }
 
-        return $text;
+    /**
+     * {@inheritdoc}
+     */
+    public function getOuterHtml($xpath)
+    {
+        $node = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
+
+        return $node->ownerDocument->saveXML($node);
     }
 
     /**

@@ -31,6 +31,12 @@
         }
     },
 
+    "autoload-dev": {
+        "psr-4": {
+            "Behat\\Mink\\Tests\\Driver\\": "tests"
+        }
+    },
+
     "extra": {
         "branch-alias": {
             "dev-master": "1.2.x-dev"

@@ -7,8 +7,9 @@ $password = isset($SERVER['PHP_AUTH_PW']) ? $SERVER['PHP_AUTH_PW'] : false;
 if ($username == 'mink-user' && $password == 'mink-password') {
     echo 'is authenticated';
 } else {
-    header('WWW-Authenticate: Basic realm="Mink Testing Area"');
-    header('HTTP/1.0 401 Unauthorized');
+    $resp = new \Symfony\Component\HttpFoundation\Response();
+    $resp->setStatusCode(401);
+    $resp->headers->set('WWW-Authenticate', 'Basic realm="Mink Testing Area"');
 
     echo 'is not authenticated';
 }

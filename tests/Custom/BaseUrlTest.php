@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Behat\Mink\Driver;
+namespace Behat\Mink\Tests\Driver\Custom;
 
 use Behat\Mink\Driver\BrowserKitDriver;
 use Behat\Mink\Session;
@@ -9,24 +9,11 @@ use Symfony\Component\HttpKernel\Client;
 /**
  * @group functional
  */
-class BrowserKitDriverTest extends GeneralDriverTest
+class BaseUrlTest extends \PHPUnit_Framework_TestCase
 {
-    protected static function getDriver()
-    {
-        $client = new Client(require(__DIR__.'/../../../app.php'));
-        $driver = new BrowserKitDriver($client);
-
-        return $driver;
-    }
-
-    protected function pathTo($path)
-    {
-        return 'http://localhost'.$path;
-    }
-
     public function testBaseUrl()
     {
-        $client = new Client(require(__DIR__.'/../../../app.php'));
+        $client = new Client(require(__DIR__.'/../app.php'));
         $driver = new BrowserKitDriver($client, 'http://localhost/foo/');
         $session = new Session($driver);
 

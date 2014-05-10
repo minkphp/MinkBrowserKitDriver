@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Behat\Mink\Driver;
+namespace Behat\Mink\Tests\Driver\Custom;
 
 use Behat\Mink\Driver\BrowserKitDriver;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Response;
 
-class ExtraDriverTest extends \PHPUnit_Framework_TestCase
+class ErrorHandlingTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var TestClient

@@ -5,7 +5,7 @@ namespace app;
 $app = new \Silex\Application();
 $app->register(new \Silex\Provider\SessionServiceProvider());
 
-$def = realpath(__DIR__.'/../vendor/behat/mink/tests/Behat/Mink/Driver/web-fixtures');
+$def = realpath(__DIR__.'/../vendor/behat/mink/driver-testsuite/web-fixtures');
 $ovr = realpath(__DIR__.'/web-fixtures');
 $cbk = function ($file) use ($app, $def, $ovr) {
     $file = str_replace('.file', '.php', $file);

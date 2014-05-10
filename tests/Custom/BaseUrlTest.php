@@ -17,8 +17,8 @@ class BaseUrlTest extends \PHPUnit_Framework_TestCase
         $driver = new BrowserKitDriver($client, 'http://localhost/foo/');
         $session = new Session($driver);
 
-        $session->visit('http://localhost/foo/index.php');
+        $session->visit('http://localhost/foo/index.html');
         $this->assertEquals(200, $session->getStatusCode());
-        $this->assertEquals('http://localhost/foo/index.php', $session->getCurrentUrl());
+        $this->assertEquals('http://localhost/foo/index.html', $session->getCurrentUrl());
     }
 }

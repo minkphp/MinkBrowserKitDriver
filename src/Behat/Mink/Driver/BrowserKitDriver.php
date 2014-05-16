@@ -518,7 +518,19 @@ class BrowserKitDriver extends CoreDriver
      */
     public function isChecked($xpath)
     {
-        return (bool) $this->getValue($xpath);
+        $field = $this->getFormField($xpath);
+
+        if (!$field instanceof ChoiceFormField || 'select' === $field->getType()) {
+            throw new DriverException(sprintf('Impossible to get the checked state of the element with XPath "%s" as it is not a checkbox or radio input', $xpath));
+        }
+
+        if ('checkbox' === $field->getType()) {
+            return $field->hasValue();
+        }
+
+        $radio = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
+
+        return $radio->getAttribute('value') === $field->getValue();
     }
 
     /**

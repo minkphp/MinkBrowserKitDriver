@@ -419,6 +419,12 @@ class BrowserKitDriver extends CoreDriver
             return $this->getAttribute($xpath, 'value');
         }
 
+        $node = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
+
+        if ('option' === $node->tagName) {
+            return $this->getOptionValue($node);
+        }
+
         try {
             $field = $this->getFormField($xpath);
         } catch (\InvalidArgumentException $e) {
@@ -483,7 +489,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function isSelected($xpath)
     {
-        $optionValue = $this->getCrawlerNode($this->getFilteredCrawler($xpath))->getAttribute('value');
+        $optionValue = $this->getOptionValue($this->getCrawlerNode($this->getFilteredCrawler($xpath)));
         $selectField = $this->getFormField('(' . $xpath . ')/ancestor-or-self::*[local-name()="select"]');
         $selectValue = $selectField->getValue();
 
@@ -845,6 +851,28 @@ class BrowserKitDriver extends CoreDriver
     private function getFormNodeId(\DOMElement $form)
     {
         return md5($form->getLineNo() . $form->getNodePath() . $form->nodeValue);
+    }
+
+    /**
+     * Gets the value of an option element
+     *
+     * @param \DOMElement $option
+     *
+     * @return string
+     *
+     * @see \Symfony\Component\DomCrawler\Field\ChoiceFormField::buildOptionValue
+     */
+    private function getOptionValue(\DOMElement $option)
+    {
+        if ($option->hasAttribute('value')) {
+            return $option->getAttribute('value');
+        }
+
+        if (!empty($option->nodeValue)) {
+            return $option->nodeValue;
+        }
+
+        return '1'; // DomCrawler uses 1 by default if there is no text in the option
     }
 
     /**

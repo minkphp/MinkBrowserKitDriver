@@ -560,11 +560,7 @@ class BrowserKitDriver extends CoreDriver
     {
         $crawler = $this->getFilteredCrawler($xpath);
 
-        try {
-            $this->submit($crawler->form());
-        } catch (\LogicException $e) {
-            throw new DriverException($e->getMessage(), 0, $e);
-        }
+        $this->submit($crawler->form());
     }
 
     /**

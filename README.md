@@ -34,8 +34,8 @@ Installation
 ``` json
 {
     "require": {
-        "behat/mink":                   "1.4.*",
-        "behat/mink-browserkit-driver": "1.0.*"
+        "behat/mink":                   "~1.5",
+        "behat/mink-browserkit-driver": "~1.1"
     }
 }
 ```

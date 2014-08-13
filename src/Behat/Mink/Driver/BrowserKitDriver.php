@@ -431,13 +431,7 @@ class BrowserKitDriver extends CoreDriver
             return $this->getAttribute($xpath, 'value');
         }
 
-        $value = $field->getValue();
-
-        if ($field instanceof ChoiceFormField && 'checkbox' === $field->getType()) {
-            $value = null !== $value;
-        }
-
-        return $value;
+        return $field->getValue();
     }
 
     /**

@@ -22,6 +22,7 @@ $POST['agreement'] = isset($POST['agreement']) ? 'on' : 'off';
 ksort($POST);
 echo str_replace('>', '', var_export($POST, true)) . "\n";
 if (isset($FILES['about']) && file_exists($FILES['about']->getPathname())) {
+    echo $FILES['about']->getClientOriginalName() . "\n";
     echo file_get_contents($FILES['about']->getPathname());
 } else {
     echo "no file";

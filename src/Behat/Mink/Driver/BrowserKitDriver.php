@@ -246,6 +246,14 @@ class BrowserKitDriver extends CoreDriver
     /**
      * {@inheritdoc}
      */
+    public function getResponseHeader($name)
+    {
+        return $this->getResponse()->getHeader($name);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getResponseHeaders()
     {
         return $this->getResponse()->getHeaders();

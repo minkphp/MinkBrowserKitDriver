@@ -415,7 +415,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getValue($xpath)
     {
-        if (in_array($this->getAttribute($xpath, 'type'), array('submit', 'image', 'button'))) {
+        if (in_array($this->getAttribute($xpath, 'type'), array('submit', 'image', 'button'), true)) {
             return $this->getAttribute($xpath, 'value');
         }
 
@@ -487,7 +487,7 @@ class BrowserKitDriver extends CoreDriver
         $selectField = $this->getFormField('(' . $xpath . ')/ancestor-or-self::*[local-name()="select"]');
         $selectValue = $selectField->getValue();
 
-        return is_array($selectValue) ? in_array($optionValue, $selectValue) : $optionValue == $selectValue;
+        return is_array($selectValue) ? in_array($optionValue, $selectValue, true) : $optionValue === $selectValue;
     }
 
     /**
@@ -810,11 +810,11 @@ class BrowserKitDriver extends CoreDriver
     {
         $type = $node->hasAttribute('type') ? $node->getAttribute('type') : null;
 
-        if ('input' == $node->nodeName && in_array($type, array('submit', 'image'))) {
+        if ('input' === $node->nodeName && in_array($type, array('submit', 'image'), true)) {
             return true;
         }
 
-        return 'button' == $node->nodeName && (null === $type || 'submit' == $type);
+        return 'button' === $node->nodeName && (null === $type || 'submit' === $type);
     }
 
     /**
@@ -828,7 +828,7 @@ class BrowserKitDriver extends CoreDriver
     {
         $type = $node->hasAttribute('type') ? $node->getAttribute('type') : null;
 
-        return in_array($node->nodeName, array('input', 'button')) && 'reset' == $type;
+        return in_array($node->nodeName, array('input', 'button'), true) && 'reset' === $type;
     }
 
     /**
@@ -883,7 +883,8 @@ class BrowserKitDriver extends CoreDriver
 
             if (!($field instanceof InputFormField && in_array(
                 $nodeReflection->getValue($field)->getAttribute('type'),
-                array('submit', 'button', 'image')
+                array('submit', 'button', 'image'),
+                true
             ))) {
                 $valueReflection->setValue($to[$name], $valueReflection->getValue($field));
             }

@@ -495,17 +495,17 @@ class BrowserKitDriver extends CoreDriver
      */
     public function click($xpath)
     {
-        $node = $this->getFilteredCrawler($xpath);
-        $crawlerNode = $this->getCrawlerNode($node);
-        $tagName = $crawlerNode->nodeName;
+        $crawler = $this->getFilteredCrawler($xpath);
+        $node = $this->getCrawlerNode($crawler);
+        $tagName = $node->nodeName;
 
         if ('a' === $tagName) {
-            $this->client->click($node->link());
+            $this->client->click($crawler->link());
             $this->forms = array();
-        } elseif ($this->canSubmitForm($crawlerNode)) {
-            $this->submit($node->form());
-        } elseif ($this->canResetForm($crawlerNode)) {
-            $this->resetForm($crawlerNode);
+        } elseif ($this->canSubmitForm($node)) {
+            $this->submit($crawler->form());
+        } elseif ($this->canResetForm($node)) {
+            $this->resetForm($node);
         } else {
             $message = sprintf('%%s supports clicking on links and buttons only. But "%s" provided', $tagName);
 

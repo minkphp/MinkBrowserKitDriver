@@ -507,7 +507,7 @@ class BrowserKitDriver extends CoreDriver
         } elseif ($this->canResetForm($crawlerNode)) {
             $this->resetForm($crawlerNode);
         } else {
-            $message = sprintf('%%s supports clicking on links and buttons only. But "%s" provided', $tagName);
+            $message = sprintf('%%s supports clicking on links and submit or reset buttons only. But "%s" provided', $tagName);
 
             throw new UnsupportedDriverActionException($message, $this);
         }

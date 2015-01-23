@@ -10,13 +10,10 @@
 
 namespace Behat\Mink\Driver;
 
-use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
-use Behat\Mink\Session;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
-use Symfony\Component\BrowserKit\Request;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
@@ -25,8 +22,6 @@ use Symfony\Component\DomCrawler\Field\FormField;
 use Symfony\Component\DomCrawler\Field\InputFormField;
 use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
-use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
-use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 use Symfony\Component\HttpKernel\Client as HttpKernelClient;
 
 /**
@@ -36,7 +31,6 @@ use Symfony\Component\HttpKernel\Client as HttpKernelClient;
  */
 class BrowserKitDriver extends CoreDriver
 {
-    private $session;
     private $client;
 
     /**
@@ -45,8 +39,6 @@ class BrowserKitDriver extends CoreDriver
     private $forms = array();
     private $serverParameters = array();
     private $started = false;
-    private $removeScriptFromUrl = false;
-    private $removeHostFromUrl = false;
 
     /**
      * Initializes BrowserKit driver.
@@ -72,46 +64,6 @@ class BrowserKitDriver extends CoreDriver
     public function getClient()
     {
         return $this->client;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setSession(Session $session)
-    {
-        $this->session = $session;
-    }
-
-    /**
-     * Tells driver to remove hostname from URL.
-     *
-     * @param Boolean $remove
-     *
-     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
-     */
-    public function setRemoveHostFromUrl($remove = true)
-    {
-        trigger_error(
-            'setRemoveHostFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
-            E_USER_DEPRECATED
-        );
-        $this->removeHostFromUrl = (bool) $remove;
-    }
-
-    /**
-     * Tells driver to remove script name from URL.
-     *
-     * @param Boolean $remove
-     *
-     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
-     */
-    public function setRemoveScriptFromUrl($remove = true)
-    {
-        trigger_error(
-            'setRemoveScriptFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
-            E_USER_DEPRECATED
-        );
-        $this->removeScriptFromUrl = (bool) $remove;
     }
 
     /**
@@ -155,7 +107,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function visit($url)
     {
-        $this->client->request('GET', $this->prepareUrl($url), array(), array(), $this->serverParameters);
+        $this->client->request('GET', $url, array(), array(), $this->serverParameters);
         $this->forms = array();
     }
 
@@ -164,19 +116,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getCurrentUrl()
     {
-        if (method_exists($this->client, 'getInternalRequest')) {
-            $request = $this->client->getInternalRequest();
-        } else {
-            // BC layer for BrowserKit 2.2.x and older
-            $request = $this->client->getRequest();
-
-            if (null !== $request && !$request instanceof Request && !$request instanceof HttpFoundationRequest) {
-                throw new DriverException(sprintf(
-                    'The BrowserKit client returned an unsupported request implementation: %s. Please upgrade your BrowserKit package to 2.3 or newer.',
-                    get_class($request)
-                ));
-            }
-        }
+        $request = $this->client->getInternalRequest();
 
         if ($request === null) {
             throw new DriverException('Unable to access the request before visiting a page');
@@ -351,7 +291,7 @@ class BrowserKitDriver extends CoreDriver
 
         $elements = array();
         foreach ($nodes as $i => $node) {
-            $elements[] = new NodeElement(sprintf('(%s)[%d]', $xpath, $i + 1), $this->session);
+            $elements[] = sprintf('(%s)[%d]', $xpath, $i + 1);
         }
 
         return $elements;
@@ -564,16 +504,6 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function getResponse()
     {
-        if (!method_exists($this->client, 'getInternalResponse')) {
-            $implementationResponse = $this->client->getResponse();
-
-            if (null === $implementationResponse) {
-                throw new DriverException('Unable to access the response before visiting a page');
-            }
-
-            return $this->convertImplementationResponse($implementationResponse);
-        }
-
         $response = $this->client->getInternalResponse();
 
         if (null === $response) {
@@ -581,79 +511,6 @@ class BrowserKitDriver extends CoreDriver
         }
 
         return $response;
-    }
-
-    /**
-     * Gets the BrowserKit Response for legacy BrowserKit versions.
-     *
-     * Before 2.3.0, there was no Client::getInternalResponse method, and the
-     * return value of Client::getResponse can be anything when the implementation
-     * uses Client::filterResponse because of a bad choice done in BrowserKit and
-     * kept for BC reasons (the Client::getInternalResponse method has been added
-     * to solve it).
-     *
-     * This implementation supports client which don't rely Client::filterResponse
-     * and clients which use an HttpFoundation Response (like the HttpKernel client).
-     *
-     * @param object $response the response specific to the BrowserKit implementation
-     *
-     * @return Response
-     *
-     * @throws DriverException If the response cannot be converted to a BrowserKit response
-     */
-    private function convertImplementationResponse($response)
-    {
-        if ($response instanceof Response) {
-            return $response;
-        }
-
-        // due to a bug, the HttpKernel client implementation returns the HttpFoundation response
-        // The conversion logic is copied from Symfony\Component\HttpKernel\Client::filterResponse
-        if ($response instanceof HttpFoundationResponse) {
-            $headers = $response->headers->all();
-            if ($response->headers->getCookies()) {
-                $cookies = array();
-                foreach ($response->headers->getCookies() as $cookie) {
-                    $cookies[] = new Cookie(
-                        $cookie->getName(),
-                        $cookie->getValue(),
-                        $cookie->getExpiresTime(),
-                        $cookie->getPath(),
-                        $cookie->getDomain(),
-                        $cookie->isSecure(),
-                        $cookie->isHttpOnly()
-                    );
-                }
-                $headers['Set-Cookie'] = $cookies;
-            }
-
-            // this is needed to support StreamedResponse
-            ob_start();
-            $response->sendContent();
-            $content = ob_get_clean();
-
-            return new Response($content, $response->getStatusCode(), $headers);
-        }
-
-        throw new DriverException(sprintf(
-            'The BrowserKit client returned an unsupported response implementation: %s. Please upgrade your BrowserKit package to 2.3 or newer.',
-            get_class($response)
-        ));
-    }
-
-    /**
-     * Prepares URL for visiting.
-     * Removes "*.php/" from urls and then passes it to BrowserKitDriver::visit().
-     *
-     * @param string $url
-     *
-     * @return string
-     */
-    protected function prepareUrl($url)
-    {
-        $replacement = ($this->removeHostFromUrl ? '' : '$1') . ($this->removeScriptFromUrl ? '' : '$2');
-
-        return preg_replace('#(https?\://[^/]+)(/[^/\.]+\.php)?#', $replacement, $url);
     }
 
     /**

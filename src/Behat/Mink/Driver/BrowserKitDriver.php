@@ -881,11 +881,10 @@ class BrowserKitDriver extends CoreDriver
             $nodeReflection->setAccessible(true);
             $valueReflection->setAccessible(true);
 
-            if (!($field instanceof InputFormField && in_array(
-                $nodeReflection->getValue($field)->getAttribute('type'),
-                array('submit', 'button', 'image'),
-                true
-            ))) {
+            $isIgnoredField = $field instanceof InputFormField &&
+                in_array($nodeReflection->getValue($field)->getAttribute('type'), array('submit', 'button', 'image'), true);
+
+            if (!$isIgnoredField) {
                 $valueReflection->setValue($to[$name], $valueReflection->getValue($field));
             }
         }

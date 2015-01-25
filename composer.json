@@ -26,8 +26,8 @@
     },
 
     "autoload": {
-        "psr-0": {
-            "Behat\\Mink\\Driver": "src/"
+        "psr-4": {
+            "Behat\\Mink\\Driver\\": "src/"
         }
     },
 

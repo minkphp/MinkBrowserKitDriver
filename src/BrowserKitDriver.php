@@ -367,7 +367,7 @@ class BrowserKitDriver extends CoreDriver
     {
         $node = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
 
-        return $node->ownerDocument->saveXML($node);
+        return $node->ownerDocument->saveHTML($node);
     }
 
     /**

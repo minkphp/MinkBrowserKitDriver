@@ -13,7 +13,7 @@ matrix:
 
 cache:
   directories:
-    - $HOME/.composer/cache
+    - $HOME/.composer/cache/files
 
 before_install:
   - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require -n --no-update symfony/symfony=$SYMFONY_VERSION; fi;'

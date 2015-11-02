@@ -17,12 +17,12 @@
     "require": {
         "php":                  ">=5.3.6",
         "behat/mink":           "~1.7@dev",
-        "symfony/browser-kit":  "~2.3",
-        "symfony/dom-crawler":  "~2.3"
+        "symfony/browser-kit":  "~2.3|~3.0",
+        "symfony/dom-crawler":  "~2.3|~3.0"
     },
 
     "require-dev": {
-        "symfony/phpunit-bridge": "~2.7",
+        "symfony/phpunit-bridge": "~2.7|~3.0",
         "silex/silex": "~1.2"
     },
 

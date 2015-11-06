@@ -807,7 +807,14 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCrawlerNode(Crawler $crawler)
     {
-        $node = $crawler->getNode(0);
+        $node = null;
+
+        if ($crawler instanceof \IteratorAggregate) {
+            $node = $crawler->getNode(0);
+        } else {
+            $crawler->rewind();
+            $node = $crawler->current();
+        }
 
         if (null !== $node) {
             return $node;

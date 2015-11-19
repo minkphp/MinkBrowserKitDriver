@@ -807,8 +807,15 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCrawlerNode(Crawler $crawler)
     {
-        $crawler->rewind();
-        $node = $crawler->current();
+        $node = null;
+
+        if ($crawler instanceof \Iterator) {
+            // for symfony 2.3 compatibility as getNode is not public before symfony 2.4
+            $crawler->rewind();
+            $node = $crawler->current();
+        } else {
+            $node = $crawler->getNode(0);
+        }
 
         if (null !== $node) {
             return $node;

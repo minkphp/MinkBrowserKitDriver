@@ -19,7 +19,7 @@
     foreach ($cookies as $name => $val) {
         $cookies[$name] = (string)$val;
     }
-    echo str_replace(array('>'), '', var_export($cookies, true));
+    echo str_replace(array('>'), '', var_export(html_escape_value($cookies), true));
     ?>
 </body>
 </html>

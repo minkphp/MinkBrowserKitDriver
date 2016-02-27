@@ -6,9 +6,9 @@
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
 </head>
 <body>
-    <h1>Anket for <?php echo $app['request']->request->get('first_name') ?></h1>
+    <h1>Anket for <?php echo html_escape_value($app['request']->request->get('first_name')) ?></h1>
 
-    <span id="first">Firstname: <?php echo $app['request']->request->get('first_name') ?></span>
-    <span id="last">Lastname: <?php echo $app['request']->request->get('last_name') ?></span>
+    <span id="first">Firstname: <?php echo html_escape_value($app['request']->request->get('first_name')) ?></span>
+    <span id="last">Lastname: <?php echo html_escape_value($app['request']->request->get('last_name')) ?></span>
 </body>
 </html>

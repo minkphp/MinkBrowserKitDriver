@@ -8,7 +8,7 @@
 </head>
 <body>
     Previous cookie: <?php
-        echo $app['request']->cookies->has('srvr_cookie') ? $app['request']->cookies->get('srvr_cookie') : 'NO';
+        echo $app['request']->cookies->has('srvr_cookie') ? html_escape_value($app['request']->cookies->get('srvr_cookie')) : 'NO';
     ?>
 </body>
 </html>

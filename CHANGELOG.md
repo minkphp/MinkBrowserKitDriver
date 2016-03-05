@@ -1,3 +1,11 @@
+1.3.2 / 2016-03-05
+==================
+
+Testsuite:
+
+* Disallowed failures on PHP 7 on Travis (tests were passing since a long time)
+* Added HTML escaping of submitted values in the driver testsuite web-fixtures
+
 1.3.1 / 2016-01-19
 ==================
 

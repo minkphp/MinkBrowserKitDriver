@@ -6,16 +6,16 @@ php: [5.3, 5.4, 5.5, 5.6, 7.0, hhvm]
 
 matrix:
   include:
+    # Test against LTS versions
     - php: 5.5
       env: SYMFONY_VERSION='2.3.*'
     - php: 5.5
-      env: SYMFONY_VERSION='2.5.*@dev'
+      env: SYMFONY_VERSION='2.7.*'
     - php: 5.6
-      env: SYMFONY_VERSION='2.8.*@dev'
+      env: SYMFONY_VERSION='2.8.*'
+    # Test against dev versions of dependencies
     - php: 5.6
-      env: DEPENDENCIES='dev' SYMFONY_VERSION='3.0.*@dev'
-  allow_failures:
-    - env: DEPENDENCIES='dev' SYMFONY_VERSION='3.0.*@dev'
+      env: DEPENDENCIES='dev'
 
 cache:
   directories:

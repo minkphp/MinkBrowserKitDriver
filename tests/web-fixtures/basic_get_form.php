@@ -10,7 +10,7 @@
     <div id="serach">
         <?php
         $GET = $app['request']->query->all();
-        echo isset($GET['q']) && $GET['q'] ? $GET['q'] : 'No search query'
+        echo isset($GET['q']) && $GET['q'] ? html_escape_value($GET['q']) : 'No search query'
         ?>
     </div>
 

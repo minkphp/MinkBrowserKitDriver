@@ -20,10 +20,10 @@ if (isset($POST['select_multiple_numbers']) && false !== strpos($POST['select_mu
 // http://www.w3.org/TR/html401/interact/forms.html#checkbox
 $POST['agreement'] = isset($POST['agreement']) ? 'on' : 'off';
 ksort($POST);
-echo str_replace('>', '', var_export($POST, true)) . "\n";
+echo str_replace('>', '', var_export(html_escape_value($POST), true)) . "\n";
 if (isset($FILES['about']) && file_exists($FILES['about']->getPathname())) {
-    echo $FILES['about']->getClientOriginalName() . "\n";
-    echo file_get_contents($FILES['about']->getPathname());
+    echo html_escape_value($FILES['about']->getClientOriginalName()) . "\n";
+    echo html_escape_value(file_get_contents($FILES['about']->getPathname()));
 } else {
     echo "no file";
 }

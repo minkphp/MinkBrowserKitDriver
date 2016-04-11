@@ -33,18 +33,10 @@ $mink->getSession('silex')->getPage()->findLink('Chat')->click();
 Installation
 ------------
 
-``` json
-{
-    "require": {
-        "behat/mink":                   "~1.5",
-        "behat/mink-browserkit-driver": "~1.1"
-    }
-}
-```
+To install use the `composer require` command:
 
-``` bash
-$> curl -sS https://getcomposer.org/installer | php
-$> php composer.phar install
+```bash
+composer require --dev behat/mink behat/mink-browserkit-driver
 ```
 
 Maintainers

@@ -413,7 +413,24 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setValue($xpath, $value)
     {
-        $this->getFormField($xpath)->setValue($value);
+        $formField = $this->getFormField($xpath);
+
+        try {
+            $formField->setValue($value);
+        } catch (\InvalidArgumentException $e) {
+            // Last chance select value by options text
+            if ($formField instanceof ChoiceFormField) {
+                $newValue = $this->getSelectValuesByOptionTest($xpath, $value);
+
+                if ($newValue) {
+                    $formField->setValue($newValue);
+
+                    return;
+                }
+            }
+
+            throw $e;
+        }
     }
 
     /**
@@ -769,6 +786,45 @@ class BrowserKitDriver extends CoreDriver
         }
 
         return '1'; // DomCrawler uses 1 by default if there is no text in the option
+    }
+
+    /**
+     * Return select values by options text
+     *
+     * @param string $xpath
+     * @param array|string $value
+     * @return array|string|null
+     *
+     * @throws DriverException
+     */
+    private function getSelectValuesByOptionTest($xpath, $value)
+    {
+        $fieldNode = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
+        $newValue = null;
+
+        if ($fieldNode->tagName !== 'select') {
+            return null;
+        }
+
+        if (is_array($value) && $fieldNode->hasAttribute('multiple')) {
+            $newValue = array();
+
+            /** @var \DOMElement $option */
+            foreach ($fieldNode->getElementsByTagName('option') as $option) {
+                if (in_array($option->nodeValue, $value, true)) {
+                    $newValue[] = $option->getAttribute('value');
+                }
+            }
+        } else {
+            /** @var \DOMElement $option */
+            foreach ($fieldNode->getElementsByTagName('option') as $option) {
+                if ($option->nodeValue === $value) {
+                    $newValue = $option->getAttribute('value');
+                }
+            }
+        }
+
+        return $newValue;
     }
 
     /**

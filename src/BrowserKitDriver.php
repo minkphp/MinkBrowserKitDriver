@@ -139,6 +139,15 @@ class BrowserKitDriver extends CoreDriver
     /**
      * {@inheritdoc}
      */
+    public function post($url, $parameters = array())
+    {
+        $this->client->request('POST', $this->prepareUrl($url), $parameters, array(), $this->serverParameters);
+        $this->forms = array();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function visit($url)
     {
         $this->client->request('GET', $this->prepareUrl($url), array(), array(), $this->serverParameters);

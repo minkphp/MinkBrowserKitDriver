@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit colors="true" bootstrap="vendor/behat/mink/driver-testsuite/bootstrap.php">
+<phpunit colors="true" bootstrap="vendor/autoload.php">
     <php>
         <var name="driver_config_factory" value="Behat\Mink\Tests\Driver\BrowserKitConfig::getInstance" />
     </php>
@@ -8,8 +8,8 @@
     <testsuites>
         <testsuite name="Driver test suite">
             <directory>tests</directory>
-            <directory>vendor/behat/mink/driver-testsuite/tests/Basic</directory>
-            <directory>vendor/behat/mink/driver-testsuite/tests/Form</directory>
+            <directory>vendor/mink/driver-testsuite/tests/Basic</directory>
+            <directory>vendor/mink/driver-testsuite/tests/Form</directory>
         </testsuite>
     </testsuites>
 

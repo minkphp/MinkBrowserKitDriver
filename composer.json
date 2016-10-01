@@ -22,8 +22,8 @@
     },
 
     "require-dev": {
-        "symfony/phpunit-bridge": "~2.7|~3.0",
-        "silex/silex": "~1.2"
+        "mink/driver-testsuite": "dev-master",
+        "symfony/http-kernel": "~2.3|~3.0"
     },
 
     "autoload": {

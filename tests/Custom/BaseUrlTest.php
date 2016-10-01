@@ -4,6 +4,7 @@ namespace Behat\Mink\Tests\Driver\Custom;
 
 use Behat\Mink\Driver\BrowserKitDriver;
 use Behat\Mink\Session;
+use Behat\Mink\Tests\Driver\Util\FixturesKernel;
 use Symfony\Component\HttpKernel\Client;
 
 /**
@@ -13,7 +14,7 @@ class BaseUrlTest extends \PHPUnit_Framework_TestCase
 {
     public function testBaseUrl()
     {
-        $client = new Client(require(__DIR__.'/../app.php'));
+        $client = new Client(new FixturesKernel());
         $driver = new BrowserKitDriver($client, 'http://localhost/foo/');
         $session = new Session($driver);
 

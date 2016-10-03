@@ -77,7 +77,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setRemoveHostFromUrl($remove = true)
     {
-        trigger_error(
+        @trigger_error(
             'setRemoveHostFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
             E_USER_DEPRECATED
         );
@@ -93,7 +93,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setRemoveScriptFromUrl($remove = true)
     {
-        trigger_error(
+        @trigger_error(
             'setRemoveScriptFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
             E_USER_DEPRECATED
         );

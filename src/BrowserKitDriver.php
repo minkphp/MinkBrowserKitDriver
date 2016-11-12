@@ -477,7 +477,13 @@ class BrowserKitDriver extends CoreDriver
             $this->client->click($crawler->link());
             $this->forms = array();
         } elseif ($this->canSubmitForm($node)) {
-            $this->submit($crawler->form());
+            $method = null;
+
+            if ($node->hasAttribute('formmethod')) {
+                $method = $node->getAttribute('formmethod') ?: 'GET';
+            }
+
+            $this->submit($crawler->form(null, $method));
         } elseif ($this->canResetForm($node)) {
             $this->resetForm($node);
         } else {

@@ -236,8 +236,14 @@ class BrowserKitDriver extends CoreDriver
             return;
         }
 
+        try {
+            $domain = parse_url($this->getCurrentUrl(), PHP_URL_HOST) ?: '';
+        } catch (DriverException $exception) {
+            $domain = '';
+        }
+
         $jar = $this->client->getCookieJar();
-        $jar->set(new Cookie($name, $value));
+        $jar->set(new Cookie($name, $value, null, null, $domain));
     }
 
     /**

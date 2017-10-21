@@ -346,6 +346,7 @@ class BrowserKitDriver extends CoreDriver
     {
         $text = $this->getFilteredCrawler($xpath)->text();
         $text = str_replace("\n", ' ', $text);
+        $text = str_replace("\r", '', $text);
         $text = preg_replace('/ {2,}/', ' ', $text);
 
         return trim($text);

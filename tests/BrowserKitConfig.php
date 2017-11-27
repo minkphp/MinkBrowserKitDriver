@@ -4,7 +4,6 @@ namespace Behat\Mink\Tests\Driver;
 
 use Behat\Mink\Driver\BrowserKitDriver;
 use Behat\Mink\Tests\Driver\Util\FixturesKernel;
-use Symfony\Component\DomCrawler\Tests\FormTest;
 use Symfony\Component\HttpKernel\Client;
 
 class BrowserKitConfig extends AbstractConfig
@@ -45,7 +44,7 @@ class BrowserKitConfig extends AbstractConfig
                 'testHtml5FormAction',
                 'testHtml5FormMethod',
             ))
-            && !method_exists(FormTest::class, 'testGetMethodWithOverride')
+            && !method_exists('Symfony\Component\DomCrawler\Tests\FormTest', 'testGetMethodWithOverride')
         ) {
             return 'Mink BrowserKit doesn\'t support HTML5 form attributes before Symfony 3.3';
         }

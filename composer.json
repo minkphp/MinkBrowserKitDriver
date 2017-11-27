@@ -23,8 +23,7 @@
 
     "require-dev": {
         "mink/driver-testsuite": "dev-master",
-        "symfony/http-kernel": "~2.3|~3.0|~4.0",
-        "phpunit/phpunit": "^4.8.35|^5.7"
+        "symfony/http-kernel": "~2.3|~3.0|~4.0"
     },
 
     "autoload": {

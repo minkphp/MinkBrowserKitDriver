@@ -35,4 +35,20 @@ class BrowserKitConfig extends AbstractConfig
     {
         return false;
     }
+
+    public function skipMessage($testCase, $test)
+    {
+        if (
+            'Behat\Mink\Tests\Driver\Form\Html5Test' === $testCase
+            && in_array($test, array(
+                'testHtml5FormAction',
+                'testHtml5FormMethod',
+            ))
+            && !method_exists('Symfony\Component\DomCrawler\Tests\FormTest', 'testGetMethodWithOverride')
+        ) {
+            return 'Mink BrowserKit doesn\'t support HTML5 form attributes before Symfony 3.3';
+        }
+
+        return parent::skipMessage($testCase, $test);
+    }
 }

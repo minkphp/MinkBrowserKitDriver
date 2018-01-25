@@ -2,7 +2,7 @@ language: php
 
 sudo: false
 
-php: [5.4, 5.5, 5.6, 7.0, 7.1, hhvm]
+php: [5.4, 5.5, 5.6, 7.0, 7.1, 7.2, hhvm]
 
 matrix:
   include:
@@ -15,6 +15,8 @@ matrix:
       env: SYMFONY_VERSION='^3'
     # Test against dev versions of dependencies
     - php: 7.1
+      env: DEPENDENCIES='dev'
+    - php: 7.2
       env: DEPENDENCIES='dev'
 
 cache:

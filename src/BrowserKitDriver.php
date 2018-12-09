@@ -14,6 +14,7 @@ use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
@@ -150,7 +151,13 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getCurrentUrl()
     {
-        $request = $this->client->getInternalRequest();
+        // This should be encapsulated in `getRequest` method if any other method needs the request
+        try {
+            $request = $this->client->getInternalRequest();
+        } catch (BadMethodCallException $e) {
+            // Handling Symfony 5+ behaviour
+            $request = null;
+        }
 
         if ($request === null) {
             throw new DriverException('Unable to access the request before visiting a page');
@@ -538,7 +545,12 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function getResponse()
     {
-        $response = $this->client->getInternalResponse();
+        try {
+            $response = $this->client->getInternalResponse();
+        } catch (BadMethodCallException $e) {
+            // Handling Symfony 5+ behaviour
+            $response = null;
+        }
 
         if (null === $response) {
             throw new DriverException('Unable to access the response before visiting a page');

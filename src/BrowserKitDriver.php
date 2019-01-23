@@ -244,7 +244,7 @@ class BrowserKitDriver extends CoreDriver
         }
 
         $jar = $this->client->getCookieJar();
-        $jar->set(new Cookie($name, $value));
+        $jar->set(new Cookie($name, $value, 0, '/', null, false, true, false, null));
     }
 
     /**

@@ -312,7 +312,14 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getStatusCode()
     {
-        return $this->getResponse()->getStatus();
+        $response = $this->getResponse();
+
+        // BC layer for Symfony < 4.3
+        if (!method_exists($response, 'getStatusCode')) {
+            return $this->getResponse()->getStatus();
+        }
+
+        return $this->getResponse()->getStatusCode();
     }
 
     /**

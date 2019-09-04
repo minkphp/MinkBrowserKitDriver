@@ -2,10 +2,14 @@ language: php
 
 sudo: false
 
-php: [5.4, 5.5, 5.6, 7.0, 7.1, 7.2]
+php: [5.6, 7.0, 7.1, 7.2, 7.3]
 
 matrix:
   include:
+    - php: 5.4
+      dist: trusty
+    - php: 5.5
+      dist: trusty
     - php: 5.3
       dist: precise
     # Test against LTS versions
@@ -15,7 +19,7 @@ matrix:
       env: SYMFONY_VERSION='^3'
     # Test against dev versions of dependencies
     - php: 7.2
-      env: DEPENDENCIES='dev'
+      env: DEPENDENCIES='dev' SYMFONY_PHPUNIT_VERSION='7.5' # Avoid using PHPUnit 8 until our testsuite is compatible
 
 cache:
   directories:

@@ -72,7 +72,7 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Tells driver to remove hostname from URL.
      *
-     * @param Boolean $remove
+     * @param boolean $remove
      *
      * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
      */
@@ -88,7 +88,7 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Tells driver to remove script name from URL.
      *
-     * @param Boolean $remove
+     * @param boolean $remove
      *
      * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
      */

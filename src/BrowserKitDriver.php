@@ -576,6 +576,10 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function prepareUrl($url)
     {
+        if (!$this->removeHostFromUrl && !$this->removeScriptFromUrl) {
+            return $url;
+        }
+
         $replacement = ($this->removeHostFromUrl ? '' : '$1') . ($this->removeScriptFromUrl ? '' : '$2');
 
         return preg_replace('#(https?\://[^/]+)(/[^/\.]+\.php)?#', $replacement, $url);

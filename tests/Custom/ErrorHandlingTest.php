@@ -14,13 +14,9 @@ class ErrorHandlingTest extends TestCase
      */
     private $client;
 
-    protected function setUp()
-    {
-        $this->client = new TestClient();
-    }
-
     public function testGetClient()
     {
+        $this->client = new TestClient();
         $this->assertSame($this->client, $this->getDriver()->getClient());
     }
 
@@ -80,6 +76,7 @@ class ErrorHandlingTest extends TestCase
 </html>
 HTML;
 
+        $this->client = new TestClient();
         $this->client->setNextResponse(new Response($html));
 
         $driver = $this->getDriver();
@@ -105,6 +102,7 @@ HTML;
 </html>
 HTML;
 
+        $this->client = new TestClient();
         $this->client->setNextResponse(new Response($html));
 
         $driver = $this->getDriver();
@@ -131,6 +129,7 @@ HTML;
 </html>
 HTML;
 
+        $this->client = new TestClient();
         $this->client->setNextResponse(new Response($html));
 
         $driver = $this->getDriver();
@@ -152,6 +151,7 @@ HTML;
 </html>
 HTML;
 
+        $this->client = new TestClient();
         $this->client->setNextResponse(new Response($html));
 
         $driver = $this->getDriver();

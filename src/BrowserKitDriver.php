@@ -12,6 +12,7 @@ namespace Behat\Mink\Driver;
 
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
@@ -46,11 +47,15 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Initializes BrowserKit driver.
      *
-     * @param Client      $client  BrowserKit client instance
-     * @param string|null $baseUrl Base URL for HttpKernel clients
+     * @param AbstractBrowser|Client $client  BrowserKit client instance
+     * @param string|null            $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(Client $client, $baseUrl = null)
+    public function __construct($client, $baseUrl = null)
     {
+        if (!$client instanceof AbstractBrowser && !$client instanceof Client) {
+            throw new \Exception('AbstractBrowser or Client required.');
+        }
+
         $this->client = $client;
         $this->client->followRedirects(true);
 
@@ -62,7 +67,7 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Returns BrowserKit HTTP client instance.
      *
-     * @return Client
+     * @return AbstractBrowser|Client
      */
     public function getClient()
     {

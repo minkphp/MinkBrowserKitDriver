@@ -2,31 +2,21 @@ language: php
 
 sudo: false
 
-php: [5.6, 7.0, 7.1, 7.2, 7.3]
-
 matrix:
   include:
-    - php: 5.4
-      dist: trusty
-    - php: 5.5
-      dist: trusty
-    - php: 5.3
-      dist: precise
-    # Test against LTS versions
-    - php: 7.2
-      env: SYMFONY_VERSION='^2'
-    - php: 7.2
+    - php: 5.6
       env: SYMFONY_VERSION='^3'
-    # Test against dev versions of dependencies
+    - php: 7.1
+      env: SYMFONY_VERSION='^4'
     - php: 7.2
-      env: DEPENDENCIES='dev' SYMFONY_PHPUNIT_VERSION='7.5' # Avoid using PHPUnit 8 until our testsuite is compatible
+      env: SYMFONY_VERSION='^4'
 
 cache:
   directories:
     - $HOME/.composer/cache/files
 
 before_install:
-  - composer config minimum-stability dev
+  - composer require --no-update symfony/browser-kit:$SYMFONY_VERSION
 
 install:
   - composer install -n --prefer-dist

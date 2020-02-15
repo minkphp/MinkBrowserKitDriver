@@ -18,7 +18,7 @@ cache:
     - $HOME/.composer/cache/files
 
 before_install:
-  - composer require --no-update symfony/browser-kit:$SYMFONY_VERSION
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require -n --no-update symfony/browser-kit=$SYMFONY_VERSION; fi;
 
 install:
   - composer install -n --prefer-dist

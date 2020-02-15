@@ -6,6 +6,13 @@ php: [5.6, 7.0, 7.1, 7.2, 7.3, 7.4]
 
 matrix:
   include:
+    - php: 5.3
+      env: SYMFONY_VERSION='^2'
+      dist: precise
+    - php: 5.4
+      dist: trusty
+    - php: 5.5
+      dist: trusty
     - php: 5.6
       env: SYMFONY_VERSION='^3'
     - php: 7.1

@@ -19,12 +19,11 @@ matrix:
       env: SYMFONY_VERSION='^3'
     # Test against dev versions of dependencies
     - php: 7.2
-      env: DEPENDENCIES='dev' SYMFONY_PHPUNIT_VERSION='7.5' # Avoid using PHPUnit 8 until our testsuite is compatible
+      env: DEPENDENCIES='dev'
 
 cache:
   directories:
     - $HOME/.composer/cache/files
-    - $HOME/symfony-bridge/.phpunit
 
 before_install:
   - if [ "$DEPENDENCIES" = "dev" ]; then composer config minimum-stability dev; fi;
@@ -32,9 +31,8 @@ before_install:
 
 install:
   - composer install -n
-  - vendor/bin/simple-phpunit install
 
-script: vendor/bin/simple-phpunit -v --coverage-clover=coverage.clover
+script: vendor/bin/phpunit -v --coverage-clover=coverage.clover
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar

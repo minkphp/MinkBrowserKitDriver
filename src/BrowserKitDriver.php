@@ -722,7 +722,7 @@ class BrowserKitDriver extends CoreDriver
             }
         }
 
-        $this->client->submit($form);
+        $this->client->submit($form, array(), $this->serverParameters);
 
         $this->forms = array();
     }

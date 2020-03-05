@@ -358,7 +358,8 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getText($xpath)
     {
-        $text = $this->getFilteredCrawler($xpath)->text();
+        $text = $this->getFilteredCrawler($xpath)->text(null, true);
+        // TODO drop our own normalization once supporting only dom-crawler 4.4+ as it already does it.
         $text = str_replace("\n", ' ', $text);
         $text = preg_replace('/ {2,}/', ' ', $text);
 

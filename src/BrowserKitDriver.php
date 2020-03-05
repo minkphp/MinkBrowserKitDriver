@@ -371,8 +371,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getHtml($xpath)
     {
-        // cut the tag itself (making innerHTML out of outerHTML)
-        return preg_replace('/^\<[^\>]+\>|\<[^\>]+\>$/', '', $this->getOuterHtml($xpath));
+        return $this->getFilteredCrawler($xpath)->html();
     }
 
     /**
@@ -380,7 +379,13 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getOuterHtml($xpath)
     {
-        $node = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
+        $crawler = $this->getFilteredCrawler($xpath);
+
+        if (method_exists($crawler, 'outerHtml')) {
+            return $crawler->outerHtml();
+        }
+
+        $node = $this->getCrawlerNode($crawler);
 
         return $node->ownerDocument->saveHTML($node);
     }

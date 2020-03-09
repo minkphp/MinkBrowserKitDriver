@@ -13,7 +13,13 @@
             "homepage":  "http://everzet.com"
         }
     ],
-
+    "repositories": [
+        {
+            "type": "github",
+            "no-api": true,
+            "url": "https://github.com/oleg-andreyev/driver-testsuite.git"
+        }
+    ],
     "require": {
         "php":                  ">=5.3.6",
         "behat/mink":           "^1.7.1@dev",
@@ -22,7 +28,7 @@
     },
 
     "require-dev": {
-        "mink/driver-testsuite": "dev-master",
+        "mink/driver-testsuite": "dev-issue-137",
         "symfony/http-kernel": "~2.3|~3.0|~4.0"
     },
 

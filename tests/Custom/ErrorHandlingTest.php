@@ -4,8 +4,12 @@ namespace Behat\Mink\Tests\Driver\Custom;
 
 use Behat\Mink\Driver\BrowserKitDriver;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\HttpKernel\Kernel;
+
+require_once __DIR__ . '/../helpers/ErrorHandlingTestHelper.php';
 
 class ErrorHandlingTest extends TestCase
 {
@@ -162,33 +166,5 @@ HTML;
     private function getDriver()
     {
         return new BrowserKitDriver($this->client);
-    }
-}
-
-class TestClient extends Client
-{
-    protected $nextResponse = null;
-    protected $nextScript = null;
-
-    public function setNextResponse(Response $response)
-    {
-        $this->nextResponse = $response;
-    }
-
-    public function setNextScript($script)
-    {
-        $this->nextScript = $script;
-    }
-
-    protected function doRequest($request)
-    {
-        if (null === $this->nextResponse) {
-            return new Response();
-        }
-
-        $response = $this->nextResponse;
-        $this->nextResponse = null;
-
-        return $response;
     }
 }

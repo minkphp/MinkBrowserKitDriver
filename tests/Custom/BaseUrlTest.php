@@ -7,6 +7,7 @@ use Behat\Mink\Session;
 use Behat\Mink\Tests\Driver\Util\FixturesKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Client;
+use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
 /**
  * @group functional
@@ -15,7 +16,12 @@ class BaseUrlTest extends TestCase
 {
     public function testBaseUrl()
     {
-        $client = new Client(new FixturesKernel());
+        if (class_exists('\Symfony\Component\HttpKernel\HttpKernelBrowser')) {
+            $client = new HttpKernelBrowser(new FixturesKernel());
+        } else {
+            $client = new Client(new FixturesKernel());
+        }
+
         $driver = new BrowserKitDriver($client, 'http://localhost/foo/');
         $session = new Session($driver);
 

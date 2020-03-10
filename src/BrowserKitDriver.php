@@ -425,7 +425,15 @@ class BrowserKitDriver extends CoreDriver
             return $this->getAttribute($xpath, 'value');
         }
 
-        return $field->getValue();
+        $value = $field->getValue();
+
+        if ('select' === $node->tagName && null === $value) {
+            // symfony/dom-crawler returns null as value for a non-multiple select without
+            // options but we want an empty string to match browsers.
+            $value = '';
+        }
+
+        return $value;
     }
 
     /**

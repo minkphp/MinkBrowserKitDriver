@@ -30,7 +30,7 @@ before_install:
   - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require -n --no-update symfony/lts=$SYMFONY_VERSION; fi;'
 
 install:
-  - composer install -n
+  - composer install -n --prefer-dist
 
 script: vendor/bin/phpunit -v --coverage-clover=coverage.clover
 

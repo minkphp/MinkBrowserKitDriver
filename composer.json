@@ -23,6 +23,7 @@
 
     "require-dev": {
         "mink/driver-testsuite": "dev-master",
+        "symfony/debug": "^2.7|^3.0|^4.0",
         "symfony/http-kernel": "~2.3|~3.0|~4.0"
     },
 

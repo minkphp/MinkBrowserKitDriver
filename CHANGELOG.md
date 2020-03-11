@@ -1,3 +1,22 @@
+1.3.4 / 2020-03-11
+==================
+
+BC Break:
+
+* Changed the return value for `getValue` on a select without any options to an empty string rather than `null` to respect the common contract between Mink drivers
+
+Bug fixes:
+
+* Changed phpdoc types from `Boolean` to `boolean` to be compatible with psalm type checking
+* Improved compatibility with the HTML5 parsing of the symfony/dom-crawler component in 4.4+
+* Removed usages of APIs deprecated in symfony/dom-crawler 4.4
+* Send the configured headers when submitting forms
+
+Testsuite:
+
+* Removed HHVM from CI as they dropped support for PHP compatibility
+* Added CI on PHP 7.2, 7.3 and 7.4
+
 1.3.3 / 2018-05-02
 ==================
 

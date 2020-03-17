@@ -7,8 +7,8 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\BrowserKit\AbstractBrowser;
 
-if (!class_exists(AbstractBrowser::class)) {
-    class_alias('Symfony\Component\BrowserKit\Client', AbstractBrowser::class);
+if (!class_exists('Symfony\Component\BrowserKit\AbstractBrowser')) {
+    class_alias('Symfony\Component\BrowserKit\Client', 'Symfony\Component\BrowserKit\AbstractBrowser');
 }
 
 class ErrorHandlingTest extends TestCase

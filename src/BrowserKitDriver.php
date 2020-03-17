@@ -24,12 +24,12 @@ use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
-if (!class_exists(AbstractBrowser::class)) {
-    class_alias('Symfony\Component\BrowserKit\Client', AbstractBrowser::class);
+if (!class_exists('Symfony\Component\BrowserKit\AbstractBrowser')) {
+    class_alias('Symfony\Component\BrowserKit\Client', 'Symfony\Component\BrowserKit\AbstractBrowser');
 }
 
-if (!class_exists(HttpKernelBrowser::class)) {
-    class_alias('Symfony\Component\HttpKernel\Client', HttpKernelBrowser::class);
+if (!class_exists('Symfony\Component\HttpKernel\HttpKernelBrowser')) {
+    class_alias('Symfony\Component\HttpKernel\Client', 'Symfony\Component\HttpKernel\HttpKernelBrowser');
 }
 
 /**

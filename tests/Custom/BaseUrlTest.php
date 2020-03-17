@@ -8,8 +8,8 @@ use Behat\Mink\Tests\Driver\Util\FixturesKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
-if (!class_exists(HttpKernelBrowser::class)) {
-    class_alias('Symfony\Component\HttpKernel\Client', HttpKernelBrowser::class);
+if (!class_exists('Symfony\Component\HttpKernel\HttpKernelBrowser')) {
+    class_alias('Symfony\Component\HttpKernel\Client', 'Symfony\Component\HttpKernel\HttpKernelBrowser');
 }
 
 /**

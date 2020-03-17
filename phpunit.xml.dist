@@ -9,7 +9,6 @@
         <testsuite name="Driver test suite">
             <directory>tests</directory>
             <directory>vendor/mink/driver-testsuite/tests/Basic</directory>
-            <directory>vendor/mink/driver-testsuite/tests/Form</directory>
         </testsuite>
     </testsuites>
 

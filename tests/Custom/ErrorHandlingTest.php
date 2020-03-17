@@ -29,7 +29,7 @@ class ErrorHandlingTest extends TestCase
     }
 
     /**
-     * @expectedException \Symfony\Component\BrowserKit\Exception\BadMethodCallException
+     * @expectedException \Exception
      *
      * Looks like we have to mark these tests as "legacy", otherwise we get deprecation errors.
      * Although the deprecations are handled, there's no way to avoid the deprecation message here.
@@ -41,7 +41,7 @@ class ErrorHandlingTest extends TestCase
     }
 
     /**
-     * @expectedException \Symfony\Component\BrowserKit\Exception\BadMethodCallException
+     * @expectedException \Exception
      *
      * Looks like we have to mark these tests as "legacy", otherwise we get deprecation errors.
      * Although the deprecations are handled, there's no way to avoid the deprecation message here.
@@ -53,7 +53,7 @@ class ErrorHandlingTest extends TestCase
     }
 
     /**
-     * @expectedException \Symfony\Component\BrowserKit\Exception\BadMethodCallException
+     * @expectedException \Exception
      *
      * Looks like we have to mark these tests as "legacy", otherwise we get deprecation errors.
      * Although the deprecations are handled, there's no way to avoid the deprecation message here.

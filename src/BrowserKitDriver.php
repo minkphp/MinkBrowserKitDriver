@@ -14,6 +14,7 @@ use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
@@ -895,7 +896,11 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCrawler()
     {
-        $crawler = $this->browser->getCrawler();
+        try {
+            $crawler = $this->browser->getCrawler();
+        } catch (BadMethodCallException $e) {
+            $crawler = null;
+        }
 
         if (null === $crawler) {
             throw new DriverException('Unable to access the response content before visiting a page');

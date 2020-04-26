@@ -48,8 +48,8 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Initializes BrowserKit driver.
      *
-     * @param Client|AbstractBrowser      $client  BrowserKit client instance
-     * @param string|null $baseUrl Base URL for HttpKernel clients
+     * @param Client|AbstractBrowser $client  BrowserKit client instance
+     * @param string|null            $baseUrl Base URL for HttpKernel clients
      */
     public function __construct($client, $baseUrl = null)
     {

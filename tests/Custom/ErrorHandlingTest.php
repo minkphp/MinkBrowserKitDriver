@@ -56,7 +56,7 @@ class ErrorHandlingTest extends TestCase
         if ($exception instanceof BadMethodCallException) {
             $expectedMessage = sprintf(
                 'The "request()" method must be called before "%s::getCrawler()".',
-                AbstractBrowser::class
+                'Symfony\Component\BrowserKit\AbstractBrowser'
             );
             $this->assertEquals($expectedMessage, $exception->getMessage());
             return;

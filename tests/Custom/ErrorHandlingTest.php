@@ -212,7 +212,7 @@ trait TestClientTrait
     }
 }
 
-if (class_exists(AbstractBrowser::class)) {
+if (class_exists('\Symfony\Component\BrowserKit\AbstractBrowser')) {
     class TestClient extends AbstractBrowser {
         use TestClientTrait;
     }

@@ -53,15 +53,15 @@ class BrowserKitDriver extends CoreDriver
      */
     public function __construct($client, $baseUrl = null)
     {
-        if (class_exists(AbstractBrowser::class) && !$client instanceof AbstractBrowser) {
+        if (class_exists('\Symfony\Component\BrowserKit\AbstractBrowser') && !$client instanceof AbstractBrowser) {
             throw new InvalidArgumentException(
-                sprintf('$client must be instanceof %s', AbstractBrowser::class)
+                '$client must be instanceof Symfony\Component\BrowserKit\AbstractBrowser'
             );
         }
 
-        if (!class_exists(AbstractBrowser::class) && !$client instanceof Client) {
+        if (!class_exists('\Symfony\Component\BrowserKit\AbstractBrowser') && !$client instanceof Client) {
             throw new InvalidArgumentException(
-                sprintf('$client must be instanceof %s', Client::class)
+                '$client must be instanceof Symfony\Component\BrowserKit\Client'
             );
         }
 

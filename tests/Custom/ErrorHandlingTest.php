@@ -53,20 +53,18 @@ class ErrorHandlingTest extends TestCase
         } catch (\Exception $exception) {
         } finally {
             if ($exception instanceof BadMethodCallException) {
-                $this->expectException(BadMethodCallException::class);
-                $this->expectExceptionMessage(
-                    sprintf(
-                        'The "request()" method must be called before "%s::getCrawler()".',
-                        AbstractBrowser::class
-                    )
+                $expectedMessage = sprintf(
+                    'The "request()" method must be called before "%s::getCrawler()".',
+                    AbstractBrowser::class
                 );
-
-                throw $exception;
+                $this->assertEquals($expectedMessage, $exception->getMessage());
+                return;
             }
-            $this->expectException(DriverException::class);
-            $this->expectExceptionMessage('Unable to access the response content before visiting a page');
-
-            throw $exception;
+            $this->assertTrue($exception instanceof DriverException);
+            $this->assertEquals(
+                'Unable to access the response content before visiting a page',
+                $exception->getMessage()
+            );
         }
     }
 

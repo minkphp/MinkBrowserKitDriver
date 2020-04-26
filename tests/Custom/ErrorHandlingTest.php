@@ -189,31 +189,31 @@ HTML;
     }
 
     /**
-     * @param \Throwable $exception
-     * @param string     $expectedExceptionClass
+     * @param null|\Throwable $exception
+     * @param string          $expectedExceptionClass
      */
     private function assertException($exception, $expectedExceptionClass)
     {
-        $this->assertThat(
-            $exception,
-            new ExceptionConstraint(
-                $expectedExceptionClass
-            )
-        );
+        if (class_exists('\PHPUnit_Framework_Constraint_Exception')) {
+            $constraint = new \PHPUnit_Framework_Constraint_Exception($expectedExceptionClass);
+        } else {
+            $constraint = new ExceptionConstraint($expectedExceptionClass);
+        }
+        $this->assertThat($exception, $constraint);
     }
 
     /**
-     * @param \Throwable $exception
-     * @param string     $expectedMessage
+     * @param null|\Throwable $exception
+     * @param string          $expectedMessage
      */
     private function assertExceptionMessage($exception, $expectedMessage)
     {
-        $this->assertThat(
-            $exception,
-            new ExceptionMessage(
-                $expectedMessage
-            )
-        );
+        if (class_exists('\PHPUnit_Framework_Constraint_ExceptionMessage')) {
+            $constraint = new \PHPUnit_Framework_Constraint_ExceptionMessage($expectedMessage);
+        } else {
+            $constraint = new ExceptionMessage($expectedMessage);
+        }
+        $this->assertThat($exception, $constraint);
     }
 }
 

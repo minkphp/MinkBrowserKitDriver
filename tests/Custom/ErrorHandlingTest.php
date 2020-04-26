@@ -9,6 +9,8 @@ use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
+use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
+use PHPUnit\Framework\Constraint\ExceptionMessage;
 
 class ErrorHandlingTest extends TestCase
 {
@@ -58,15 +60,18 @@ class ErrorHandlingTest extends TestCase
                 'The "request()" method must be called before "%s::getCrawler()".',
                 'Symfony\Component\BrowserKit\AbstractBrowser'
             );
-            $this->assertEquals($expectedMessage, $exception->getMessage());
+            $this->assertException(
+                $exception,
+                'Symfony\Component\BrowserKit\Exception\BadMethodCallException'
+            );
+            $this->assertExceptionMessage($exception, $expectedMessage);
             return;
         }
-        $this->assertTrue($exception instanceof DriverException);
-        $this->assertEquals(
-            'Unable to access the response content before visiting a page',
-            $exception->getMessage()
+        $this->assertException($exception,'Behat\Mink\Exception\DriverException');
+        $this->assertExceptionMessage(
+            $exception,
+            'Unable to access the response content before visiting a page'
         );
-
     }
 
     /**
@@ -182,10 +187,38 @@ HTML;
     {
         return new BrowserKitDriver($this->client);
     }
+
+    /**
+     * @param \Throwable $exception
+     * @param string     $expectedExceptionClass
+     */
+    private function assertException($exception, $expectedExceptionClass)
+    {
+        $this->assertThat(
+            $exception,
+            new ExceptionConstraint(
+                $expectedExceptionClass
+            )
+        );
+    }
+
+    /**
+     * @param \Throwable $exception
+     * @param string     $expectedMessage
+     */
+    private function assertExceptionMessage($exception, $expectedMessage)
+    {
+        $this->assertThat(
+            $exception,
+            new ExceptionMessage(
+                $expectedMessage
+            )
+        );
+    }
 }
 
 if (class_exists('\Symfony\Component\BrowserKit\AbstractBrowser')) {
-    
+
     class TestClient extends AbstractBrowser {
 
         protected $nextResponse = null;

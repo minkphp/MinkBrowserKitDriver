@@ -184,40 +184,63 @@ HTML;
     }
 }
 
-trait TestClientTrait
-{
-    protected $nextResponse = null;
-    protected $nextScript = null;
+if (class_exists('\Symfony\Component\BrowserKit\AbstractBrowser')) {
+    
+    class TestClient extends AbstractBrowser {
 
-    public function setNextResponse(Response $response)
-    {
-        $this->nextResponse = $response;
-    }
+        protected $nextResponse = null;
+        protected $nextScript = null;
 
-    public function setNextScript($script)
-    {
-        $this->nextScript = $script;
-    }
-
-    protected function doRequest($request)
-    {
-        if (null === $this->nextResponse) {
-            return new Response();
+        public function setNextResponse(Response $response)
+        {
+            $this->nextResponse = $response;
         }
 
-        $response = $this->nextResponse;
-        $this->nextResponse = null;
+        public function setNextScript($script)
+        {
+            $this->nextScript = $script;
+        }
 
-        return $response;
-    }
-}
+        protected function doRequest($request)
+        {
+            if (null === $this->nextResponse) {
+                return new Response();
+            }
 
-if (class_exists('\Symfony\Component\BrowserKit\AbstractBrowser')) {
-    class TestClient extends AbstractBrowser {
-        use TestClientTrait;
+            $response = $this->nextResponse;
+            $this->nextResponse = null;
+
+            return $response;
+        }
     }
+
 } else {
+
     class TestClient extends Client {
-        use TestClientTrait;
+
+        protected $nextResponse = null;
+        protected $nextScript = null;
+
+        public function setNextResponse(Response $response)
+        {
+            $this->nextResponse = $response;
+        }
+
+        public function setNextScript($script)
+        {
+            $this->nextScript = $script;
+        }
+
+        protected function doRequest($request)
+        {
+            if (null === $this->nextResponse) {
+                return new Response();
+            }
+
+            $response = $this->nextResponse;
+            $this->nextResponse = null;
+
+            return $response;
+        }
     }
 }

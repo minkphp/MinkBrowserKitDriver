@@ -13,6 +13,7 @@ namespace Behat\Mink\Driver;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Symfony\Component\BrowserKit\Client;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
 use Symfony\Component\BrowserKit\Response;
@@ -24,6 +25,7 @@ use Symfony\Component\DomCrawler\Field\InputFormField;
 use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpKernel\Client as HttpKernelClient;
+use InvalidArgumentException;
 
 /**
  * Symfony2 BrowserKit driver.
@@ -46,11 +48,23 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Initializes BrowserKit driver.
      *
-     * @param Client      $client  BrowserKit client instance
+     * @param Client|AbstractBrowser      $client  BrowserKit client instance
      * @param string|null $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(Client $client, $baseUrl = null)
+    public function __construct($client, $baseUrl = null)
     {
+        if (class_exists(AbstractBrowser::class) && !$client instanceof AbstractBrowser) {
+            throw new InvalidArgumentException(
+                sprintf('$client must be instanceof %s', AbstractBrowser::class)
+            );
+        }
+
+        if (!class_exists(AbstractBrowser::class) && !$client instanceof Client) {
+            throw new InvalidArgumentException(
+                sprintf('$client must be instanceof %s', Client::class)
+            );
+        }
+
         $this->client = $client;
         $this->client->followRedirects(true);
 

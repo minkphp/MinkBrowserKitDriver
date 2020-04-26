@@ -3,9 +3,12 @@
 namespace Behat\Mink\Tests\Driver\Custom;
 
 use Behat\Mink\Driver\BrowserKitDriver;
+use Behat\Mink\Exception\DriverException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\BrowserKit\AbstractBrowser;
+use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
 
 class ErrorHandlingTest extends TestCase
 {
@@ -38,16 +41,33 @@ class ErrorHandlingTest extends TestCase
     }
 
     /**
-     * @expectedException \Behat\Mink\Exception\DriverException
-     * @expectedExceptionMessage Unable to access the response content before visiting a page
-     *
      * Looks like we have to mark these tests as "legacy", otherwise we get deprecation errors.
      * Although the deprecations are handled, there's no way to avoid the deprecation message here.
      * @group legacy
      */
     public function testFindWithoutVisit()
     {
-        $this->getDriver()->find('//html');
+        $exception = null;
+        try {
+            $this->getDriver()->find('//html');
+        } catch (\Exception $exception) {
+        } finally {
+            if ($exception instanceof BadMethodCallException) {
+                $this->expectException(BadMethodCallException::class);
+                $this->expectExceptionMessage(
+                    sprintf(
+                        'The "request()" method must be called before "%s::getCrawler()".',
+                        AbstractBrowser::class
+                    )
+                );
+
+                throw $exception;
+            }
+            $this->expectException(DriverException::class);
+            $this->expectExceptionMessage('Unable to access the response content before visiting a page');
+
+            throw $exception;
+        }
     }
 
     /**
@@ -165,7 +185,7 @@ HTML;
     }
 }
 
-class TestClient extends Client
+trait TestClientTrait
 {
     protected $nextResponse = null;
     protected $nextScript = null;
@@ -190,5 +210,15 @@ class TestClient extends Client
         $this->nextResponse = null;
 
         return $response;
+    }
+}
+
+if (class_exists(AbstractBrowser::class)) {
+    class TestClient extends AbstractBrowser {
+        use TestClientTrait;
+    }
+} else {
+    class TestClient extends Client {
+        use TestClientTrait;
     }
 }

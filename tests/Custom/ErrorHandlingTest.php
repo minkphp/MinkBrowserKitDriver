@@ -53,6 +53,7 @@ class ErrorHandlingTest extends TestCase
         try {
             $this->getDriver()->find('//html');
         } catch (\Exception $exception) {
+            // in next lines we have proper assert.
         }
 
         if ($exception instanceof BadMethodCallException) {

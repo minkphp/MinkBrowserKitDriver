@@ -4,8 +4,12 @@ namespace Behat\Mink\Tests\Driver\Custom;
 
 use Behat\Mink\Driver\BrowserKitDriver;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\BrowserKit\AbstractBrowser;
+
+if (!class_exists('Symfony\Component\BrowserKit\AbstractBrowser')) {
+    class_alias('Symfony\Component\BrowserKit\Client', 'Symfony\Component\BrowserKit\AbstractBrowser');
+}
 
 class ErrorHandlingTest extends TestCase
 {
@@ -21,12 +25,11 @@ class ErrorHandlingTest extends TestCase
 
     public function testGetClient()
     {
-        $this->assertSame($this->client, $this->getDriver()->getClient());
+        $this->assertSame($this->client, $this->getDriver()->getBrowser());
     }
 
     /**
      * @expectedException \Behat\Mink\Exception\DriverException
-     * @expectedExceptionMessage Unable to access the response before visiting a page
      *
      * Looks like we have to mark these tests as "legacy", otherwise we get deprecation errors.
      * Although the deprecations are handled, there's no way to avoid the deprecation message here.
@@ -39,7 +42,6 @@ class ErrorHandlingTest extends TestCase
 
     /**
      * @expectedException \Behat\Mink\Exception\DriverException
-     * @expectedExceptionMessage Unable to access the response content before visiting a page
      *
      * Looks like we have to mark these tests as "legacy", otherwise we get deprecation errors.
      * Although the deprecations are handled, there's no way to avoid the deprecation message here.
@@ -52,7 +54,6 @@ class ErrorHandlingTest extends TestCase
 
     /**
      * @expectedException \Behat\Mink\Exception\DriverException
-     * @expectedExceptionMessage Unable to access the request before visiting a page
      *
      * Looks like we have to mark these tests as "legacy", otherwise we get deprecation errors.
      * Although the deprecations are handled, there's no way to avoid the deprecation message here.
@@ -165,7 +166,7 @@ HTML;
     }
 }
 
-class TestClient extends Client
+class TestClient extends AbstractBrowser
 {
     protected $nextResponse = null;
     protected $nextScript = null;

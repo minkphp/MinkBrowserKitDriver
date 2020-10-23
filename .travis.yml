@@ -2,34 +2,30 @@ language: php
 
 sudo: false
 
-php: [5.6, 7.0, 7.1, 7.2, 7.3]
+php: [5.6, 7.0, 7.1, 7.2, 7.3, 7.4]
 
 matrix:
   include:
+    - php: 5.3
+      env: SYMFONY_VERSION='^2'
+      dist: precise
     - php: 5.4
       dist: trusty
     - php: 5.5
       dist: trusty
-    - php: 5.3
-      dist: precise
-    # Test against LTS versions
-    - php: 7.2
-      env: SYMFONY_VERSION='^2'
-    - php: 7.2
+    - php: 5.6
       env: SYMFONY_VERSION='^3'
-    # Test against dev versions of dependencies
+    - php: 7.1
+      env: SYMFONY_VERSION='^4'
     - php: 7.2
-      env: DEPENDENCIES='dev'
+      env: SYMFONY_VERSION='^5'
 
 cache:
   directories:
     - $HOME/.composer/cache/files
 
 before_install:
-  - if [ "$DEPENDENCIES" = "dev" ]; then composer config minimum-stability dev; fi;
-  # Install symfony/error-handler on compatible PHP versions to avoid a deprecation warning of the old DebugClassLoader and ErrorHandler classes
-  - if [[ "$TRAVIS_PHP_VERSION" != 5.* && "$TRAVIS_PHP_VERSION" != 7.0 && "$SYMFONY_VERSION" = "" ]]; then composer require --no-update --dev symfony/error-handler "^4.4 || ^5.0"; fi;
-  - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require -n --no-update symfony/lts=$SYMFONY_VERSION; fi;'
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require -n --no-update symfony/browser-kit=$SYMFONY_VERSION; fi;
 
 install:
   - composer install -n --prefer-dist

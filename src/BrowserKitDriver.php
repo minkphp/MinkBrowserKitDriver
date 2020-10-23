@@ -12,7 +12,7 @@ namespace Behat\Mink\Driver;
 
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
-use Symfony\Component\BrowserKit\Client;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
 use Symfony\Component\BrowserKit\Response;
@@ -23,7 +23,15 @@ use Symfony\Component\DomCrawler\Field\FormField;
 use Symfony\Component\DomCrawler\Field\InputFormField;
 use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
-use Symfony\Component\HttpKernel\Client as HttpKernelClient;
+use Symfony\Component\HttpKernel\HttpKernelBrowser;
+
+if (!class_exists('Symfony\Component\BrowserKit\AbstractBrowser')) {
+    class_alias('Symfony\Component\BrowserKit\Client', 'Symfony\Component\BrowserKit\AbstractBrowser');
+}
+
+if (!class_exists('Symfony\Component\HttpKernel\HttpKernelBrowser')) {
+    class_alias('Symfony\Component\HttpKernel\Client', 'Symfony\Component\HttpKernel\HttpKernelBrowser');
+}
 
 /**
  * Symfony2 BrowserKit driver.
@@ -32,7 +40,7 @@ use Symfony\Component\HttpKernel\Client as HttpKernelClient;
  */
 class BrowserKitDriver extends CoreDriver
 {
-    private $client;
+    private $browser;
 
     /**
      * @var Form[]
@@ -46,27 +54,27 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Initializes BrowserKit driver.
      *
-     * @param Client      $client  BrowserKit client instance
+     * @param AbstractBrowser $browser  BrowserKit client instance
      * @param string|null $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(Client $client, $baseUrl = null)
+    public function __construct(AbstractBrowser $browser, $baseUrl = null)
     {
-        $this->client = $client;
-        $this->client->followRedirects(true);
+        $this->browser = $browser;
+        $this->browser->followRedirects();
 
-        if ($baseUrl !== null && $client instanceof HttpKernelClient) {
-            $client->setServerParameter('SCRIPT_FILENAME', parse_url($baseUrl, PHP_URL_PATH));
+        if ($baseUrl !== null && $browser instanceof HttpKernelBrowser) {
+            $browser->setServerParameter('SCRIPT_FILENAME', parse_url($baseUrl, PHP_URL_PATH));
         }
     }
 
     /**
      * Returns BrowserKit HTTP client instance.
      *
-     * @return Client
+     * @return AbstractBrowser
      */
-    public function getClient()
+    public function getBrowser()
     {
-        return $this->client;
+        return $this->browser;
     }
 
     /**
@@ -132,7 +140,7 @@ class BrowserKitDriver extends CoreDriver
     public function reset()
     {
         // Restarting the client resets the cookies and the history
-        $this->client->restart();
+        $this->browser->restart();
         $this->forms = array();
         $this->serverParameters = array();
     }
@@ -142,7 +150,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function visit($url)
     {
-        $this->client->request('GET', $this->prepareUrl($url), array(), array(), $this->serverParameters);
+        $this->browser->request('GET', $this->prepareUrl($url), array(), array(), $this->serverParameters);
         $this->forms = array();
     }
 
@@ -153,7 +161,7 @@ class BrowserKitDriver extends CoreDriver
     {
         // This should be encapsulated in `getRequest` method if any other method needs the request
         try {
-            $request = $this->client->getInternalRequest();
+            $request = $this->browser->getInternalRequest();
         } catch (BadMethodCallException $e) {
             // Handling Symfony 5+ behaviour
             $request = null;
@@ -171,7 +179,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function reload()
     {
-        $this->client->reload();
+        $this->browser->reload();
         $this->forms = array();
     }
 
@@ -180,7 +188,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function forward()
     {
-        $this->client->forward();
+        $this->browser->forward();
         $this->forms = array();
     }
 
@@ -189,7 +197,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function back()
     {
-        $this->client->back();
+        $this->browser->back();
         $this->forms = array();
     }
 
@@ -243,7 +251,7 @@ class BrowserKitDriver extends CoreDriver
             return;
         }
 
-        $jar = $this->client->getCookieJar();
+        $jar = $this->browser->getCookieJar();
         $jar->set(new Cookie($name, $value));
     }
 
@@ -255,7 +263,7 @@ class BrowserKitDriver extends CoreDriver
     private function deleteCookie($name)
     {
         $path = $this->getCookiePath();
-        $jar = $this->client->getCookieJar();
+        $jar = $this->browser->getCookieJar();
 
         do {
             if (null !== $jar->get($name, $path)) {
@@ -298,7 +306,7 @@ class BrowserKitDriver extends CoreDriver
         //     return $cookie->getValue();
         // }
 
-        $allValues = $this->client->getCookieJar()->allValues($this->getCurrentUrl());
+        $allValues = $this->browser->getCookieJar()->allValues($this->getCurrentUrl());
 
         if (isset($allValues[$name])) {
             return $allValues[$name];
@@ -502,7 +510,7 @@ class BrowserKitDriver extends CoreDriver
         $tagName = $node->nodeName;
 
         if ('a' === $tagName) {
-            $this->client->click($crawler->link());
+            $this->browser->click($crawler->link());
             $this->forms = array();
         } elseif ($this->canSubmitForm($node)) {
             $this->submit($crawler->form());
@@ -567,7 +575,7 @@ class BrowserKitDriver extends CoreDriver
     protected function getResponse()
     {
         try {
-            $response = $this->client->getInternalResponse();
+            $response = $this->browser->getInternalResponse();
         } catch (BadMethodCallException $e) {
             // Handling Symfony 5+ behaviour
             $response = null;
@@ -730,7 +738,7 @@ class BrowserKitDriver extends CoreDriver
             }
         }
 
-        $this->client->submit($form, array(), $this->serverParameters);
+        $this->browser->submit($form, array(), $this->serverParameters);
 
         $this->forms = array();
     }
@@ -888,7 +896,11 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCrawler()
     {
-        $crawler = $this->client->getCrawler();
+        try {
+            $crawler = $this->browser->getCrawler();
+        } catch (BadMethodCallException $e) {
+            $crawler = null;
+        }
 
         if (null === $crawler) {
             throw new DriverException('Unable to access the response content before visiting a page');

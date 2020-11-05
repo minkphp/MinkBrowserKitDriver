@@ -30,6 +30,8 @@ before_install:
   # Install symfony/error-handler on compatible PHP versions to avoid a deprecation warning of the old DebugClassLoader and ErrorHandler classes
   - if [[ "$TRAVIS_PHP_VERSION" != 5.* && "$TRAVIS_PHP_VERSION" != 7.0 && "$SYMFONY_VERSION" = "" ]]; then composer require --no-update --dev symfony/error-handler "^4.4 || ^5.0"; fi;
   - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require -n --no-update symfony/lts=$SYMFONY_VERSION; fi;'
+  - echo $TRAVIS_PHP_VERSION
+  - if [[ "$TRAVIS_PHP_VERSION" >= 8 ]] ; then composer require --dev --no-update  "phpunit/phpunit:^7.5.18"; fi;
 
 install:
   - composer install -n --prefer-dist

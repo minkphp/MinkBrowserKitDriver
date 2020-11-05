@@ -50,7 +50,9 @@ script: |
 after_script:
   - |
     #!/usr/bin/env bash
-    if (( "${TRAVIS_PHP_VERSION:0:1}" < "8" )) ; then
+    set -e
+
+    if [[ -f "coverage.clover" ]]; then
       wget https://scrutinizer-ci.com/ocular.phar
       php ocular.phar code-coverage:upload --format=php-clover coverage.clover
     fi

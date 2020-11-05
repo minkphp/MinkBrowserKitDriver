@@ -33,7 +33,7 @@ before_install:
   - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require -n --no-update symfony/lts=$SYMFONY_VERSION; fi;'
   - if (( "${TRAVIS_PHP_VERSION:0:1}" >= "8" )) ; then composer require --dev --no-update  "phpunit/phpunit:^7.5.18"; fi;
   # enable xdebug.coverage_enable for phpunit
-  - echo 'xdebug.coverage_enable=On' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - echo 'xdebug.mode=debug' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
 install:
   -  if (( "${TRAVIS_PHP_VERSION:3}" == "snapshot" )) ; then composer install --ignore-platform-req=php -n --prefer-dist; else  composer install  -n --prefer-dist; fi;

@@ -32,13 +32,20 @@ before_install:
   - if [[ "$TRAVIS_PHP_VERSION" != 5.* && "$TRAVIS_PHP_VERSION" != 7.0 && "$SYMFONY_VERSION" = "" ]]; then composer require --no-update --dev symfony/error-handler "^4.4 || ^5.0"; fi;
   - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require -n --no-update symfony/lts=$SYMFONY_VERSION; fi;'
   - if (( "${TRAVIS_PHP_VERSION:0:1}" >= "8" )) ; then composer require --dev --no-update  "phpunit/phpunit:^7.5.18"; fi;
-  # enable xdebug.coverage_enable for phpunit
-  - echo 'xdebug.mode=debug' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
 
 install:
   -  if (( "${TRAVIS_PHP_VERSION:3}" == "snapshot" )) ; then composer install --ignore-platform-req=php -n --prefer-dist; else  composer install  -n --prefer-dist; fi;
 
-script: vendor/bin/phpunit -v --coverage-clover=coverage.clover
+script: |
+  #!/usr/bin/env bash
+  set -e
+  if (( "${TRAVIS_PHP_VERSION:0:1}" >= "8" )) ; then
+    # In php 8.0+ we have Xdebug 3.0+ and phpunit:^7.5.18 will throw RuntimeException in vendor/phpunit/php-code-coverage/src/Driver/Xdebug.php:42
+    # because option xdebug.coverage_enable does not exists in XDebug 3.0+.
+    vendor/bin/phpunit -v
+  else
+    vendor/bin/phpunit -v --coverage-clover=coverage.clover
+  fi
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar

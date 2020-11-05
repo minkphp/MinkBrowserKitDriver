@@ -43,4 +43,5 @@ script:
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - if [[ -f "coverage.clover" ]] ; then exit 1 ; fi ;
+  - if [[ -f "coverage.clover" ]]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover ; fi;

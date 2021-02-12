@@ -1,3 +1,8 @@
 vendor
 composer.lock
 /phpunit.xml
+Dockerfile
+docker-compose.yml
+Makefile
+.phpunit.result.cache
+.idea/*

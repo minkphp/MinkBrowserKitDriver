@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Behat\Mink\Tests\Driver;
 
 use Behat\Mink\Driver\BrowserKitDriver;
 use Behat\Mink\Tests\Driver\Util\FixturesKernel;
-use Symfony\Component\HttpKernel\Client;
 
 class BrowserKitConfig extends AbstractConfig
 {
@@ -18,7 +19,7 @@ class BrowserKitConfig extends AbstractConfig
      */
     public function createDriver()
     {
-        $client = new Client(new FixturesKernel());
+        $client = new FixturesKernel();
 
         return new BrowserKitDriver($client);
     }

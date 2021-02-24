@@ -2,7 +2,7 @@ language: php
 
 sudo: false
 
-php: [5.6, 7.0, 7.1, 7.2, 7.3, 7.4, 8.0]
+php: [5.6, 7.0, 7.1, 7.2, 8.0]
 
 matrix:
   include:
@@ -22,7 +22,10 @@ matrix:
     # Test against dev versions of dependencies
     - php: 7.2
       env: DEPENDENCIES='dev'
-
+    - php: 7.3
+      env: XDEBUG_MODE=coverage
+    - php: 7.4
+      env: XDEBUG_MODE=coverage
 cache:
   directories:
     - $HOME/.composer/cache/files

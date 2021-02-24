@@ -2,7 +2,7 @@ language: php
 
 sudo: false
 
-php: [5.6, 7.0, 7.1, 7.2, 7.3, 7.4, 8.0snapshot]
+php: [5.6, 7.0, 7.1, 7.2, 8.0]
 
 matrix:
   include:
@@ -17,10 +17,15 @@ matrix:
       env: SYMFONY_VERSION='^2'
     - php: 7.2
       env: SYMFONY_VERSION='^3'
+    - php: 7.2
+      env: SYMFONY_FLEX_VERSION='^4'
     # Test against dev versions of dependencies
     - php: 7.2
       env: DEPENDENCIES='dev'
-
+    - php: 7.3
+      env: XDEBUG_MODE=coverage
+    - php: 7.4
+      env: XDEBUG_MODE=coverage
 cache:
   directories:
     - $HOME/.composer/cache/files
@@ -30,10 +35,11 @@ before_install:
   # Install symfony/error-handler on compatible PHP versions to avoid a deprecation warning of the old DebugClassLoader and ErrorHandler classes
   - if [[ "$TRAVIS_PHP_VERSION" != 5.* && "$TRAVIS_PHP_VERSION" != 7.0 && "$SYMFONY_VERSION" = "" ]]; then composer require --no-update --dev symfony/error-handler "^4.4 || ^5.0"; fi;
   - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require -n --no-update symfony/lts=$SYMFONY_VERSION; fi;'
+  - sh -c 'if [ "$SYMFONY_FLEX_VERSION" != "" ]; then composer require -n --no-update symfony/flex;  composer config extra.symfony.require "$SYMFONY_FLEX_VERSION"; fi;'
   - if (( "${TRAVIS_PHP_VERSION:0:1}" >= "8" )) ; then composer require --dev --no-update  "phpunit/phpunit:^7.5.18"; fi;
 
 install:
-  - if (( "${TRAVIS_PHP_VERSION:3}" == "snapshot" )) ; then composer install --ignore-platform-req=php -n --prefer-dist; else  composer install  -n --prefer-dist; fi;
+  - if (( "${TRAVIS_PHP_VERSION:0:1}" >= "8" )) ; then composer install --ignore-platform-req=php -n --prefer-dist; else  composer install  -n --prefer-dist; fi;
 
 script:
   # In php 8.0+ we have Xdebug 3.0+ and phpunit:^7.5.18 will throw RuntimeException in vendor/phpunit/php-code-coverage/src/Driver/Xdebug.php:42

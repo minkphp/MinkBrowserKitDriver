@@ -13,6 +13,7 @@ namespace Behat\Mink\Driver;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Symfony\Component\BrowserKit\Client;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
 use Symfony\Component\BrowserKit\Response;
@@ -24,6 +25,7 @@ use Symfony\Component\DomCrawler\Field\InputFormField;
 use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpKernel\Client as HttpKernelClient;
+use InvalidArgumentException;
 
 /**
  * Symfony2 BrowserKit driver.
@@ -46,11 +48,23 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Initializes BrowserKit driver.
      *
-     * @param Client      $client  BrowserKit client instance
-     * @param string|null $baseUrl Base URL for HttpKernel clients
+     * @param Client|AbstractBrowser $client  BrowserKit client instance
+     * @param string|null            $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(Client $client, $baseUrl = null)
+    public function __construct($client, $baseUrl = null)
     {
+        if (class_exists('\Symfony\Component\BrowserKit\AbstractBrowser') && !$client instanceof AbstractBrowser) {
+            throw new InvalidArgumentException(
+                '$client must be instanceof Symfony\Component\BrowserKit\AbstractBrowser'
+            );
+        }
+
+        if (!class_exists('\Symfony\Component\BrowserKit\AbstractBrowser') && !$client instanceof Client) {
+            throw new InvalidArgumentException(
+                '$client must be instanceof Symfony\Component\BrowserKit\Client'
+            );
+        }
+
         $this->client = $client;
         $this->client->followRedirects(true);
 
@@ -888,7 +902,12 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCrawler()
     {
-        $crawler = $this->client->getCrawler();
+        try {
+            $crawler = $this->client->getCrawler();
+        } catch (BadMethodCallException $exception) {
+            // Handling Symfony 5+ behaviour
+            $crawler = null;
+        }
 
         if (null === $crawler) {
             throw new DriverException('Unable to access the response content before visiting a page');

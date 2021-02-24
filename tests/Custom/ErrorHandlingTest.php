@@ -3,9 +3,14 @@
 namespace Behat\Mink\Tests\Driver\Custom;
 
 use Behat\Mink\Driver\BrowserKitDriver;
+use Behat\Mink\Exception\DriverException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Response;
+use Symfony\Component\BrowserKit\AbstractBrowser;
+use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
+use PHPUnit\Framework\Constraint\Exception as ExceptionConstraint;
+use PHPUnit\Framework\Constraint\ExceptionMessage;
 
 class ErrorHandlingTest extends TestCase
 {
@@ -165,30 +170,63 @@ HTML;
     }
 }
 
-class TestClient extends Client
-{
-    protected $nextResponse = null;
-    protected $nextScript = null;
+if (class_exists('\Symfony\Component\BrowserKit\AbstractBrowser')) {
 
-    public function setNextResponse(Response $response)
-    {
-        $this->nextResponse = $response;
-    }
+    class TestClient extends AbstractBrowser {
 
-    public function setNextScript($script)
-    {
-        $this->nextScript = $script;
-    }
+        protected $nextResponse = null;
+        protected $nextScript = null;
 
-    protected function doRequest($request)
-    {
-        if (null === $this->nextResponse) {
-            return new Response();
+        public function setNextResponse(Response $response)
+        {
+            $this->nextResponse = $response;
         }
 
-        $response = $this->nextResponse;
-        $this->nextResponse = null;
+        public function setNextScript($script)
+        {
+            $this->nextScript = $script;
+        }
 
-        return $response;
+        protected function doRequest($request)
+        {
+            if (null === $this->nextResponse) {
+                return new Response();
+            }
+
+            $response = $this->nextResponse;
+            $this->nextResponse = null;
+
+            return $response;
+        }
+    }
+
+} else {
+
+    class TestClient extends Client {
+
+        protected $nextResponse = null;
+        protected $nextScript = null;
+
+        public function setNextResponse(Response $response)
+        {
+            $this->nextResponse = $response;
+        }
+
+        public function setNextScript($script)
+        {
+            $this->nextScript = $script;
+        }
+
+        protected function doRequest($request)
+        {
+            if (null === $this->nextResponse) {
+                return new Response();
+            }
+
+            $response = $this->nextResponse;
+            $this->nextResponse = null;
+
+            return $response;
+        }
     }
 }

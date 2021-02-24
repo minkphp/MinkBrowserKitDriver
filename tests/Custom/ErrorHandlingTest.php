@@ -43,11 +43,12 @@ class ErrorHandlingTest extends TestCase
     }
 
     /**
+     * @expectedException \Behat\Mink\Exception\DriverException
+     * @expectedExceptionMessage Unable to access the response content before visiting a page
+     *
      * Looks like we have to mark these tests as "legacy", otherwise we get deprecation errors.
      * Although the deprecations are handled, there's no way to avoid the deprecation message here.
      * @group legacy
-     * @expectedException \Behat\Mink\Exception\DriverException
-     * @expectedExceptionMessage Unable to access the response content before visiting a pag
      */
     public function testFindWithoutVisit()
     {

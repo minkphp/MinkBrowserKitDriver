@@ -56,18 +56,18 @@ class ErrorHandlingTest extends TestCase
             // in next lines we have proper assert.
         }
 
-        if ($exception instanceof BadMethodCallException) {
-            $expectedMessage = sprintf(
-                'The "request()" method must be called before "%s::getCrawler()".',
-                'Symfony\Component\BrowserKit\AbstractBrowser'
-            );
-            $this->assertException(
-                $exception,
-                'Symfony\Component\BrowserKit\Exception\BadMethodCallException'
-            );
-            $this->assertExceptionMessage($exception, $expectedMessage);
-            return;
-        }
+//        if ($exception instanceof BadMethodCallException) {
+//            $expectedMessage = sprintf(
+//                'The "request()" method must be called before "%s::getCrawler()".',
+//                'Symfony\Component\BrowserKit\AbstractBrowser'
+//            );
+//            $this->assertException(
+//                $exception,
+//                'Symfony\Component\BrowserKit\Exception\BadMethodCallException'
+//            );
+//            $this->assertExceptionMessage($exception, $expectedMessage);
+//            return;
+//        }
         $this->assertException($exception,'Behat\Mink\Exception\DriverException');
         $this->assertExceptionMessage(
             $exception,

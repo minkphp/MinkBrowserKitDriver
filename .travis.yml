@@ -18,7 +18,7 @@ matrix:
     - php: 7.2
       env: SYMFONY_VERSION='^3'
     - php: 7.2
-      env: SYMFONY_VERSION='^4'
+      env: SYMFONY_FLEX_VERSION='^4'
     # Test against dev versions of dependencies
     - php: 7.2
       env: DEPENDENCIES='dev'
@@ -32,6 +32,7 @@ before_install:
   # Install symfony/error-handler on compatible PHP versions to avoid a deprecation warning of the old DebugClassLoader and ErrorHandler classes
   - if [[ "$TRAVIS_PHP_VERSION" != 5.* && "$TRAVIS_PHP_VERSION" != 7.0 && "$SYMFONY_VERSION" = "" ]]; then composer require --no-update --dev symfony/error-handler "^4.4 || ^5.0"; fi;
   - sh -c 'if [ "$SYMFONY_VERSION" != "" ]; then composer require -n --no-update symfony/lts=$SYMFONY_VERSION; fi;'
+  - sh -c 'if [ "$SYMFONY_FLEX_VERSION" != "" ]; then composer require -n --no-update symfony/flex;  composer config extra.symfony.require "$SYMFONY_FLEX_VERSION"; fi;'
   - if (( "${TRAVIS_PHP_VERSION:0:1}" >= "8" )) ; then composer require --dev --no-update  "phpunit/phpunit:^7.5.18"; fi;
 
 install:

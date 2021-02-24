@@ -902,7 +902,12 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCrawler()
     {
-        $crawler = $this->client->getCrawler();
+        try {
+            $crawler = $this->client->getCrawler();
+        } catch (BadMethodCallException $exception) {
+            // Handling Symfony 5+ behaviour
+            $crawler = null;
+        }
 
         if (null === $crawler) {
             throw new DriverException('Unable to access the response content before visiting a page');

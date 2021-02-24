@@ -18,4 +18,8 @@
             <directory>./src</directory>
         </whitelist>
     </filter>
+
+    <logging>
+        <log type="testdox-text" target="php://stdout" />
+    </logging>
 </phpunit>

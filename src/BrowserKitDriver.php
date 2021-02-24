@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Behat\Mink.
  * (c) Konstantin Kudryashov <ever.zet@gmail.com>
@@ -12,7 +14,7 @@ namespace Behat\Mink\Driver;
 
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
-use Symfony\Component\BrowserKit\Client;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
 use Symfony\Component\BrowserKit\Response;
@@ -23,10 +25,9 @@ use Symfony\Component\DomCrawler\Field\FormField;
 use Symfony\Component\DomCrawler\Field\InputFormField;
 use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
-use Symfony\Component\HttpKernel\Client as HttpKernelClient;
 
 /**
- * Symfony2 BrowserKit driver.
+ * Symfony BrowserKit driver.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
@@ -46,59 +47,28 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Initializes BrowserKit driver.
      *
-     * @param Client      $client  BrowserKit client instance
+     * @param AbstractBrowser $client  BrowserKit client instance
      * @param string|null $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(Client $client, $baseUrl = null)
+    public function __construct(AbstractBrowser $client, $baseUrl = null)
     {
         $this->client = $client;
         $this->client->followRedirects(true);
 
-        if ($baseUrl !== null && $client instanceof HttpKernelClient) {
-            $client->setServerParameter('SCRIPT_FILENAME', parse_url($baseUrl, PHP_URL_PATH));
+        if (null === $baseUrl) {
+            return;
         }
+        $client->setServerParameter('SCRIPT_FILENAME', parse_url($baseUrl, PHP_URL_PATH));
     }
 
     /**
      * Returns BrowserKit HTTP client instance.
      *
-     * @return Client
+     * @return AbstractBrowser
      */
     public function getClient()
     {
         return $this->client;
-    }
-
-    /**
-     * Tells driver to remove hostname from URL.
-     *
-     * @param boolean $remove
-     *
-     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
-     */
-    public function setRemoveHostFromUrl($remove = true)
-    {
-        @trigger_error(
-            'setRemoveHostFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
-            E_USER_DEPRECATED
-        );
-        $this->removeHostFromUrl = (bool) $remove;
-    }
-
-    /**
-     * Tells driver to remove script name from URL.
-     *
-     * @param boolean $remove
-     *
-     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
-     */
-    public function setRemoveScriptFromUrl($remove = true)
-    {
-        @trigger_error(
-            'setRemoveScriptFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
-            E_USER_DEPRECATED
-        );
-        $this->removeScriptFromUrl = (bool) $remove;
     }
 
     /**
@@ -335,7 +305,15 @@ class BrowserKitDriver extends CoreDriver
      */
     public function findElementXpaths($xpath)
     {
-        $nodes = $this->getCrawler()->filterXPath($xpath);
+        try{
+            $nodes = $this->getCrawler()->filterXPath($xpath);
+        } catch (BadMethodCallException $exception) {
+            throw new DriverException(
+                'Unable to access the response content before visiting a page',
+                $exception->getCode(),
+                $exception
+            );
+        }
 
         $elements = array();
         foreach ($nodes as $i => $node) {

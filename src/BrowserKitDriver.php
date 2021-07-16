@@ -273,7 +273,7 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCookiePath()
     {
-        $path = dirname(parse_url($this->getCurrentUrl(), PHP_URL_PATH));
+        $path = parse_url($this->getCurrentUrl(), PHP_URL_PATH);
 
         if ('\\' === DIRECTORY_SEPARATOR) {
             $path = str_replace('\\', '/', $path);

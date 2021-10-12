@@ -44,9 +44,7 @@ class BrowserKitConfig extends AbstractConfig
                 'testHtml5FormAction',
                 'testHtml5FormMethod',
             ))
-            && !method_exists('Symfony\Component\DomCrawler\Tests\FormTest', 'testGetMethodWithOverride')
-            // Symfony 4.4 removed tests from dist archives, making the previous detection return a false-positive
-            && !method_exists('Symfony\Component\DomCrawler\Form', 'getName')
+            && !class_exists('\Symfony\Component\DomCrawler\AbstractUriElement')
         ) {
             return 'Mink BrowserKit doesn\'t support HTML5 form attributes before Symfony 3.3';
         }

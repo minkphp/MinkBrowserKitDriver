@@ -15,7 +15,7 @@
     ],
 
     "require": {
-        "php":                  ">=5.3.6",
+        "php":                  ">=5.4",
         "behat/mink":           "^1.7.1@dev",
         "symfony/browser-kit":  "~2.3|~3.0|~4.0",
         "symfony/dom-crawler":  "~2.3|~3.0|~4.0"
@@ -24,7 +24,9 @@
     "require-dev": {
         "mink/driver-testsuite": "dev-master",
         "symfony/debug": "^2.7|^3.0|^4.0",
-        "symfony/http-kernel": "~2.3|~3.0|~4.0"
+        "symfony/http-kernel": "~2.3|~3.0|~4.0",
+        "phpunit/phpunit": "^4.8.36 || ^5.7.27 || ^6.5.14 || ^7.5.18 || ^8.5 || ^9.5",
+        "yoast/phpunit-polyfills": "^1.0"
     },
 
     "autoload": {

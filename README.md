@@ -4,9 +4,7 @@ Mink BrowserKit Driver
 [![Latest Stable Version](https://poser.pugx.org/behat/mink-browserkit-driver/v/stable.png)](https://packagist.org/packages/behat/mink-browserkit-driver)
 [![Latest Unstable Version](https://poser.pugx.org/behat/mink-browserkit-driver/v/unstable.svg)](https://packagist.org/packages/behat/mink-browserkit-driver)
 [![Total Downloads](https://poser.pugx.org/behat/mink-browserkit-driver/downloads.png)](https://packagist.org/packages/behat/mink-browserkit-driver)
-[![Build Status](https://travis-ci.org/minkphp/MinkBrowserKitDriver.svg?branch=master)](https://travis-ci.org/minkphp/MinkBrowserKitDriver)
-[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/minkphp/MinkBrowserKitDriver/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/minkphp/MinkBrowserKitDriver/)
-[![Code Coverage](https://scrutinizer-ci.com/g/minkphp/MinkBrowserKitDriver/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/minkphp/MinkBrowserKitDriver/)
+[![CI](https://github.com/minkphp/MinkBrowserKitDriver/actions/workflows/tests.yml/badge.svg)](https://github.com/minkphp/MinkBrowserKitDriver/actions/workflows/tests.yml)
 [![License](https://poser.pugx.org/behat/mink-browserkit-driver/license.svg)](https://packagist.org/packages/behat/mink-browserkit-driver)
 
 Usage Example

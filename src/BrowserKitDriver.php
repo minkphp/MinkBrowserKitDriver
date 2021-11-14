@@ -200,12 +200,14 @@ class BrowserKitDriver extends CoreDriver
     {
         if (false === $user) {
             unset($this->serverParameters['PHP_AUTH_USER'], $this->serverParameters['PHP_AUTH_PW']);
+            unset($this->serverParameters['HTTP_AUTHORIZATION']);
 
             return;
         }
 
         $this->serverParameters['PHP_AUTH_USER'] = $user;
         $this->serverParameters['PHP_AUTH_PW'] = $password;
+        $this->serverParameters['HTTP_AUTHORIZATION'] = 'Basic ' . base64_encode($user . ':' . $password);
     }
 
     /**

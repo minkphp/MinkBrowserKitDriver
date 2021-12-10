@@ -2,7 +2,7 @@
 
 <phpunit colors="true" bootstrap="vendor/autoload.php">
     <php>
-        <var name="driver_config_factory" value="Behat\Mink\Tests\Driver\HttpKernelBrowserKitConfig::getInstance" />
+        <var name="driver_config_factory" value="Behat\Mink\Tests\Driver\HttpClientBrowserKitConfig::getInstance" />
     </php>
 
     <testsuites>

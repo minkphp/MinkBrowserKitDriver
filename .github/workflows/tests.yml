@@ -11,22 +11,34 @@ defaults:
 jobs:
 
   tests:
-    name: Tests (PHP ${{ matrix.php }} ${{ matrix.minimum_stability }}, Symfony LTS ${{ matrix.symfony_lts }})
+    name: Tests on PHP ${{ matrix.php }} with ${{ matrix.implementation }}${{ matrix.name_suffix }}
     runs-on: ubuntu-20.04
     strategy:
       matrix:
         php: [ '5.4', '5.5', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1' ]
         minimum_stability: [ 'stable' ]
         symfony_lts: [ false ]
+        name_suffix: [ '' ]
+        implementation: [ 'http_kernel' ]
         include:
           - php: '8.0'
             minimum_stability: dev
+            implementation: 'http_kernel'
+            name_suffix: ' and dev deps'
           - php: '7.4'
             minimum_stability: dev
+            implementation: 'http_kernel'
+            name_suffix: ' and dev deps'
           - php: '7.2'
             symfony_lts: '^2'
+            implementation: 'http_kernel'
+            name_suffix: ' and Symfony 2'
           - php: '7.2'
             symfony_lts: '^3'
+            implementation: 'http_kernel'
+            name_suffix: ' and Symfony 3'
+          - php: '8.0'
+            implementation: http_client
       fail-fast: false
 
     env:
@@ -60,13 +72,35 @@ jobs:
         run: |
           composer require --no-update --dev symfony/error-handler "^4.4 || ^5.0"
 
+      - name: Configure for HttpClient
+        if: "${{ matrix.implementation == 'http_client'}}"
+        run: composer require --no-update --dev symfony/http-client:^4.4 symfony/mime:^4.4
+
       - name: Install dependencies
         run: |
           composer update --no-interaction --prefer-dist
 
+      - name: Setup Mink test server
+        if: "${{ matrix.implementation == 'http_client'}}"
+        run: |
+          mkdir ./logs
+          ./vendor/bin/mink-test-server &> ./logs/mink-test-server.log &
+
+      - name: Wait for browser & PHP to start
+        if: "${{ matrix.implementation == 'http_client'}}"
+        run: |
+          while ! nc -z localhost 8002 </dev/null; do echo Waiting for PHP server to start...; sleep 1; done
+
+
       - name: Run tests
+        if: "${{ matrix.implementation == 'http_kernel'}}"
         run: |
           vendor/bin/phpunit -v --coverage-clover=coverage.clover
+
+      - name: Run tests
+        if: "${{ matrix.implementation == 'http_client'}}"
+        run: |
+          vendor/bin/phpunit -c phpunit.http_client.xml -v --coverage-clover=coverage.clover
 
       - name: Upload code coverage
         if: "${{ matrix.php > '5.4' && matrix.symfony_lts == false }}"

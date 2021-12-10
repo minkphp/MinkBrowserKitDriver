@@ -6,6 +6,7 @@ Mink BrowserKit Driver
 [![Total Downloads](https://poser.pugx.org/behat/mink-browserkit-driver/downloads.png)](https://packagist.org/packages/behat/mink-browserkit-driver)
 [![CI](https://github.com/minkphp/MinkBrowserKitDriver/actions/workflows/tests.yml/badge.svg)](https://github.com/minkphp/MinkBrowserKitDriver/actions/workflows/tests.yml)
 [![License](https://poser.pugx.org/behat/mink-browserkit-driver/license.svg)](https://packagist.org/packages/behat/mink-browserkit-driver)
+[![codecov](https://codecov.io/gh/minkphp/MinkBrowserKitDriver/branch/master/graph/badge.svg?token=sECxcowuiJ)](https://codecov.io/gh/minkphp/MinkBrowserKitDriver)
 
 Usage Example
 -------------

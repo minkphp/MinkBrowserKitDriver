@@ -91,7 +91,6 @@ jobs:
         run: |
           while ! nc -z localhost 8002 </dev/null; do echo Waiting for PHP server to start...; sleep 1; done
 
-
       - name: Run tests
         if: "${{ matrix.implementation == 'http_kernel'}}"
         run: |
@@ -103,7 +102,6 @@ jobs:
           vendor/bin/phpunit -c phpunit.http_client.xml -v --coverage-clover=coverage.clover
 
       - name: Upload code coverage
-        if: "${{ matrix.php > '5.4' && matrix.symfony_lts == false }}"
-        run: |
-          composer require scrutinizer/ocular
-          vendor/bin/ocular code-coverage:upload --repository=g/minkphp/MinkBrowserKitDriver --format=php-clover coverage.clover
+        uses: codecov/codecov-action@v2
+        with:
+          files: coverage.clover

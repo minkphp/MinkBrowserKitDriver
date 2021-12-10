@@ -1,3 +1,10 @@
+1.4.1 / 2021-12-10
+==================
+
+Bug fixes:
+
+* Fixed the basic authentication implementation when using Browserkit clients other than the HttpKernel one.
+
 1.4.0 / 2021-10-12
 ==================
 

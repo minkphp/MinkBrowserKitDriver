@@ -4,7 +4,7 @@ namespace Behat\Mink\Tests\Driver\Custom;
 
 use Behat\Mink\Driver\BrowserKitDriver;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\BrowserKit\Client;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Response;
 use Yoast\PHPUnitPolyfills\Polyfills\ExpectException;
 
@@ -160,7 +160,7 @@ HTML;
     }
 }
 
-class TestClient extends Client
+class TestClient extends AbstractBrowser
 {
     protected $nextResponse = null;
     protected $nextScript = null;

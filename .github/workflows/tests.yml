@@ -15,9 +15,8 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        php: [ '5.4', '5.5', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4', '8.0', '8.1' ]
+        php: [ '7.2', '7.3', '7.4', '8.0', '8.1' ]
         minimum_stability: [ 'stable' ]
-        symfony_lts: [ false ]
         name_suffix: [ '' ]
         implementation: [ 'http_kernel' ]
         include:
@@ -29,14 +28,6 @@ jobs:
             minimum_stability: dev
             implementation: 'http_kernel'
             name_suffix: ' and dev deps'
-          - php: '7.2'
-            symfony_lts: '^2'
-            implementation: 'http_kernel'
-            name_suffix: ' and Symfony 2'
-          - php: '7.2'
-            symfony_lts: '^3'
-            implementation: 'http_kernel'
-            name_suffix: ' and Symfony 3'
           - php: '8.0'
             implementation: http_client
       fail-fast: false
@@ -61,20 +52,6 @@ jobs:
         if: "${{ matrix.minimum_stability == 'dev' }}"
         run: |
           composer config minimum-stability dev
-
-      - name: Configure for Symfony LTS version
-        if: "${{ matrix.symfony_lts != false }}"
-        run: |
-          composer require -n --no-update symfony/lts=${{ matrix.symfony_lts }}
-
-      - name: Configure for PHP >= 7.1
-        if: "${{ matrix.php >= '7.1' && matrix.symfony_lts == false }}"
-        run: |
-          composer require --no-update --dev symfony/error-handler "^4.4 || ^5.0"
-
-      - name: Configure for HttpClient
-        if: "${{ matrix.implementation == 'http_client'}}"
-        run: composer require --no-update --dev symfony/http-client:^4.4 symfony/mime:^4.4
 
       - name: Install dependencies
         run: |

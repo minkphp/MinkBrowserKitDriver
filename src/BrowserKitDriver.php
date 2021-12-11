@@ -316,11 +316,6 @@ class BrowserKitDriver extends CoreDriver
     {
         $response = $this->getResponse();
 
-        // BC layer for Symfony < 4.3
-        if (!method_exists($response, 'getStatusCode')) {
-            return $response->getStatus();
-        }
-
         return $response->getStatusCode();
     }
 
@@ -361,11 +356,8 @@ class BrowserKitDriver extends CoreDriver
     public function getText($xpath)
     {
         $text = $this->getFilteredCrawler($xpath)->text(null, true);
-        // TODO drop our own normalization once supporting only dom-crawler 4.4+ as it already does it.
-        $text = str_replace("\n", ' ', $text);
-        $text = preg_replace('/ {2,}/', ' ', $text);
 
-        return trim($text);
+        return $text;
     }
 
     /**
@@ -383,13 +375,7 @@ class BrowserKitDriver extends CoreDriver
     {
         $crawler = $this->getFilteredCrawler($xpath);
 
-        if (method_exists($crawler, 'outerHtml')) {
-            return $crawler->outerHtml();
-        }
-
-        $node = $this->getCrawlerNode($crawler);
-
-        return $node->ownerDocument->saveHTML($node);
+        return $crawler->outerHtml();
     }
 
     /**
@@ -725,13 +711,6 @@ class BrowserKitDriver extends CoreDriver
             }
         }
 
-        foreach ($form->all() as $field) {
-            // Add a fix for https://github.com/symfony/symfony/pull/10733 to support Symfony versions which are not fixed
-            if ($field instanceof TextareaFormField && null === $field->getValue()) {
-                $field->setValue('');
-            }
-        }
-
         $this->client->submit($form, array(), $this->serverParameters);
 
         $this->forms = array();
@@ -846,15 +825,7 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCrawlerNode(Crawler $crawler)
     {
-        $node = null;
-
-        if ($crawler instanceof \Iterator) {
-            // for symfony 2.3 compatibility as getNode is not public before symfony 2.4
-            $crawler->rewind();
-            $node = $crawler->current();
-        } else {
-            $node = $crawler->getNode(0);
-        }
+        $node = $crawler->getNode(0);
 
         if (null !== $node) {
             return $node;

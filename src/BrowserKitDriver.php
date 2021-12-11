@@ -821,7 +821,11 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCrawler()
     {
-        $crawler = $this->client->getCrawler();
+        try {
+            $crawler = $this->client->getCrawler();
+        } catch (BadMethodCallException $e) {
+            $crawler = null;
+        }
 
         if (null === $crawler) {
             throw new DriverException('Unable to access the response content before visiting a page');

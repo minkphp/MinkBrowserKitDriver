@@ -12,6 +12,7 @@ namespace Behat\Mink\Driver;
 
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
@@ -21,9 +22,8 @@ use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\DomCrawler\Field\FileFormField;
 use Symfony\Component\DomCrawler\Field\FormField;
 use Symfony\Component\DomCrawler\Field\InputFormField;
-use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
-use Symfony\Component\HttpKernel\Client as HttpKernelClient;
+use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
 /**
  * Symfony2 BrowserKit driver.
@@ -40,8 +40,6 @@ class BrowserKitDriver extends CoreDriver
     private $forms = array();
     private $serverParameters = array();
     private $started = false;
-    private $removeScriptFromUrl = false;
-    private $removeHostFromUrl = false;
 
     /**
      * Initializes BrowserKit driver.
@@ -49,56 +47,24 @@ class BrowserKitDriver extends CoreDriver
      * @param Client      $client  BrowserKit client instance
      * @param string|null $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(Client $client, $baseUrl = null)
+    public function __construct(AbstractBrowser $client, $baseUrl = null)
     {
         $this->client = $client;
         $this->client->followRedirects(true);
 
-        if ($baseUrl !== null && $client instanceof HttpKernelClient) {
+        if ($baseUrl !== null && $client instanceof HttpKernelBrowser) {
             $client->setServerParameter('SCRIPT_FILENAME', parse_url($baseUrl, PHP_URL_PATH));
         }
     }
 
     /**
-     * Returns BrowserKit HTTP client instance.
+     * Returns BrowserKit browser instance.
      *
-     * @return Client
+     * @return AbstractBrowser
      */
     public function getClient()
     {
         return $this->client;
-    }
-
-    /**
-     * Tells driver to remove hostname from URL.
-     *
-     * @param boolean $remove
-     *
-     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
-     */
-    public function setRemoveHostFromUrl($remove = true)
-    {
-        @trigger_error(
-            'setRemoveHostFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
-            E_USER_DEPRECATED
-        );
-        $this->removeHostFromUrl = (bool) $remove;
-    }
-
-    /**
-     * Tells driver to remove script name from URL.
-     *
-     * @param boolean $remove
-     *
-     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
-     */
-    public function setRemoveScriptFromUrl($remove = true)
-    {
-        @trigger_error(
-            'setRemoveScriptFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
-            E_USER_DEPRECATED
-        );
-        $this->removeScriptFromUrl = (bool) $remove;
     }
 
     /**
@@ -316,11 +282,6 @@ class BrowserKitDriver extends CoreDriver
     {
         $response = $this->getResponse();
 
-        // BC layer for Symfony < 4.3
-        if (!method_exists($response, 'getStatusCode')) {
-            return $response->getStatus();
-        }
-
         return $response->getStatusCode();
     }
 
@@ -361,11 +322,8 @@ class BrowserKitDriver extends CoreDriver
     public function getText($xpath)
     {
         $text = $this->getFilteredCrawler($xpath)->text(null, true);
-        // TODO drop our own normalization once supporting only dom-crawler 4.4+ as it already does it.
-        $text = str_replace("\n", ' ', $text);
-        $text = preg_replace('/ {2,}/', ' ', $text);
 
-        return trim($text);
+        return $text;
     }
 
     /**
@@ -383,13 +341,7 @@ class BrowserKitDriver extends CoreDriver
     {
         $crawler = $this->getFilteredCrawler($xpath);
 
-        if (method_exists($crawler, 'outerHtml')) {
-            return $crawler->outerHtml();
-        }
-
-        $node = $this->getCrawlerNode($crawler);
-
-        return $node->ownerDocument->saveHTML($node);
+        return $crawler->outerHtml();
     }
 
     /**
@@ -592,13 +544,7 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function prepareUrl($url)
     {
-        if (!$this->removeHostFromUrl && !$this->removeScriptFromUrl) {
-            return $url;
-        }
-
-        $replacement = ($this->removeHostFromUrl ? '' : '$1') . ($this->removeScriptFromUrl ? '' : '$2');
-
-        return preg_replace('#(https?\://[^/]+)(/[^/\.]+\.php)?#', $replacement, $url);
+        return $url;
     }
 
     /**
@@ -725,13 +671,6 @@ class BrowserKitDriver extends CoreDriver
             }
         }
 
-        foreach ($form->all() as $field) {
-            // Add a fix for https://github.com/symfony/symfony/pull/10733 to support Symfony versions which are not fixed
-            if ($field instanceof TextareaFormField && null === $field->getValue()) {
-                $field->setValue('');
-            }
-        }
-
         $this->client->submit($form, array(), $this->serverParameters);
 
         $this->forms = array();
@@ -846,15 +785,7 @@ class BrowserKitDriver extends CoreDriver
      */
     private function getCrawlerNode(Crawler $crawler)
     {
-        $node = null;
-
-        if ($crawler instanceof \Iterator) {
-            // for symfony 2.3 compatibility as getNode is not public before symfony 2.4
-            $crawler->rewind();
-            $node = $crawler->current();
-        } else {
-            $node = $crawler->getNode(0);
-        }
+        $node = $crawler->getNode(0);
 
         if (null !== $node) {
             return $node;

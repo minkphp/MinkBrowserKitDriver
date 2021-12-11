@@ -40,8 +40,6 @@ class BrowserKitDriver extends CoreDriver
     private $forms = array();
     private $serverParameters = array();
     private $started = false;
-    private $removeScriptFromUrl = false;
-    private $removeHostFromUrl = false;
 
     /**
      * Initializes BrowserKit driver.
@@ -67,38 +65,6 @@ class BrowserKitDriver extends CoreDriver
     public function getClient()
     {
         return $this->client;
-    }
-
-    /**
-     * Tells driver to remove hostname from URL.
-     *
-     * @param boolean $remove
-     *
-     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
-     */
-    public function setRemoveHostFromUrl($remove = true)
-    {
-        @trigger_error(
-            'setRemoveHostFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
-            E_USER_DEPRECATED
-        );
-        $this->removeHostFromUrl = (bool) $remove;
-    }
-
-    /**
-     * Tells driver to remove script name from URL.
-     *
-     * @param boolean $remove
-     *
-     * @deprecated Deprecated as of 1.2, to be removed in 2.0. Pass the base url in the constructor instead.
-     */
-    public function setRemoveScriptFromUrl($remove = true)
-    {
-        @trigger_error(
-            'setRemoveScriptFromUrl() is deprecated as of 1.2 and will be removed in 2.0. Pass the base url in the constructor instead.',
-            E_USER_DEPRECATED
-        );
-        $this->removeScriptFromUrl = (bool) $remove;
     }
 
     /**
@@ -578,13 +544,7 @@ class BrowserKitDriver extends CoreDriver
      */
     protected function prepareUrl($url)
     {
-        if (!$this->removeHostFromUrl && !$this->removeScriptFromUrl) {
-            return $url;
-        }
-
-        $replacement = ($this->removeHostFromUrl ? '' : '$1') . ($this->removeScriptFromUrl ? '' : '$2');
-
-        return preg_replace('#(https?\://[^/]+)(/[^/\.]+\.php)?#', $replacement, $url);
+        return $url;
     }
 
     /**

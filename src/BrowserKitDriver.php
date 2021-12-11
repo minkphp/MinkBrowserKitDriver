@@ -12,6 +12,7 @@ namespace Behat\Mink\Driver;
 
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
+use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
@@ -21,9 +22,8 @@ use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\DomCrawler\Field\FileFormField;
 use Symfony\Component\DomCrawler\Field\FormField;
 use Symfony\Component\DomCrawler\Field\InputFormField;
-use Symfony\Component\DomCrawler\Field\TextareaFormField;
 use Symfony\Component\DomCrawler\Form;
-use Symfony\Component\HttpKernel\Client as HttpKernelClient;
+use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
 /**
  * Symfony2 BrowserKit driver.
@@ -47,20 +47,20 @@ class BrowserKitDriver extends CoreDriver
      * @param Client      $client  BrowserKit client instance
      * @param string|null $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(Client $client, $baseUrl = null)
+    public function __construct(AbstractBrowser $client, $baseUrl = null)
     {
         $this->client = $client;
         $this->client->followRedirects(true);
 
-        if ($baseUrl !== null && $client instanceof HttpKernelClient) {
+        if ($baseUrl !== null && $client instanceof HttpKernelBrowser) {
             $client->setServerParameter('SCRIPT_FILENAME', parse_url($baseUrl, PHP_URL_PATH));
         }
     }
 
     /**
-     * Returns BrowserKit HTTP client instance.
+     * Returns BrowserKit browser instance.
      *
-     * @return Client
+     * @return AbstractBrowser
      */
     public function getClient()
     {

@@ -1,3 +1,22 @@
+2.0.0 / 2021-12-13
+==================
+
+BC break:
+
+* The `getClient` method now returns an AbstractBrowser from BrowserKit instead of the deprecated Client.
+* The constructor now takes an AbstractBrowser from BrowserKit instead of the deprecated Client.
+* The deprecated methods `setRemoveHostFromUrl` and `setRemoveScriptFromUrl` have been removed
+
+New features:
+
+* Added support for Symfony 5.
+
+Removed:
+
+* Removed support for Symfony <4.4.
+* Removed support for PHP <7.2.
+* Removed deprecated methods
+
 1.4.1 / 2021-12-10
 ==================
 

@@ -175,7 +175,7 @@ class TestClient extends AbstractBrowser
         $this->nextScript = $script;
     }
 
-    protected function doRequest($request)
+    protected function doRequest($request): object
     {
         if (null === $this->nextResponse) {
             return new Response();

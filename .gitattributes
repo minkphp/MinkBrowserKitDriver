@@ -1,5 +1,6 @@
-/tests export-ignore
 /.gitattributes export-ignore
+/.github export-ignore
 /.gitignore export-ignore
-/.travis export-ignore
 /phpunit.xml.dist export-ignore
+/phpunit.http_client.xml export-ignore
+/tests export-ignore

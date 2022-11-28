@@ -26,7 +26,7 @@ use Symfony\Component\DomCrawler\Form;
 use Symfony\Component\HttpKernel\HttpKernelBrowser;
 
 /**
- * Symfony2 BrowserKit driver.
+ * Symfony BrowserKit driver.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
  */
@@ -44,7 +44,6 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Initializes BrowserKit driver.
      *
-     * @param Client      $client  BrowserKit client instance
      * @param string|null $baseUrl Base URL for HttpKernel clients
      */
     public function __construct(AbstractBrowser $client, $baseUrl = null)

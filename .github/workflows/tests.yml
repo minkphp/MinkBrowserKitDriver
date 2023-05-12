@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        php: [ '7.2', '7.3', '7.4', '8.0', '8.1' ]
+        php: [ '7.2', '7.3', '7.4', '8.0', '8.1', '8.2' ]
         minimum_stability: [ 'stable' ]
         name_suffix: [ '' ]
         implementation: [ 'http_kernel' ]
@@ -37,7 +37,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 2
 
@@ -79,6 +79,6 @@ jobs:
           vendor/bin/phpunit -c phpunit.http_client.xml -v --coverage-clover=coverage.clover
 
       - name: Upload code coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: coverage.clover

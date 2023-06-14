@@ -13,7 +13,6 @@ namespace Behat\Mink\Driver;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Symfony\Component\BrowserKit\AbstractBrowser;
-use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\BrowserKit\Exception\BadMethodCallException;
 use Symfony\Component\BrowserKit\Response;
@@ -32,13 +31,22 @@ use Symfony\Component\HttpKernel\HttpKernelBrowser;
  */
 class BrowserKitDriver extends CoreDriver
 {
+    /**
+     * @var AbstractBrowser
+     */
     private $client;
 
     /**
-     * @var Form[]
+     * @var array<string, Form>
      */
     private $forms = array();
+    /**
+     * @var array<string, string>
+     */
     private $serverParameters = array();
+    /**
+     * @var bool
+     */
     private $started = false;
 
     /**
@@ -46,13 +54,17 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string|null $baseUrl Base URL for HttpKernel clients
      */
-    public function __construct(AbstractBrowser $client, $baseUrl = null)
+    public function __construct(AbstractBrowser $client, ?string $baseUrl = null)
     {
         $this->client = $client;
         $this->client->followRedirects(true);
 
         if ($baseUrl !== null && $client instanceof HttpKernelBrowser) {
-            $client->setServerParameter('SCRIPT_FILENAME', parse_url($baseUrl, PHP_URL_PATH));
+            $basePath = parse_url($baseUrl, PHP_URL_PATH);
+
+            if (\is_string($basePath)) {
+                $client->setServerParameter('SCRIPT_FILENAME', $basePath);
+            }
         }
     }
 
@@ -219,7 +231,7 @@ class BrowserKitDriver extends CoreDriver
      *
      * @param string $name Cookie name.
      */
-    private function deleteCookie($name)
+    private function deleteCookie(string $name): void
     {
         $path = $this->getCookiePath();
         $jar = $this->client->getCookieJar();
@@ -235,12 +247,14 @@ class BrowserKitDriver extends CoreDriver
 
     /**
      * Returns current cookie path.
-     *
-     * @return string
      */
-    private function getCookiePath()
+    private function getCookiePath(): string
     {
         $path = parse_url($this->getCurrentUrl(), PHP_URL_PATH);
+
+        if ($path === null || $path === false || $path === '') {
+            $path = '/';
+        }
 
         if ('\\' === DIRECTORY_SEPARATOR) {
             $path = str_replace('\\', '/', $path);
@@ -394,7 +408,26 @@ class BrowserKitDriver extends CoreDriver
      */
     public function setValue($xpath, $value)
     {
-        $this->getFormField($xpath)->setValue($value);
+        $field = $this->getFormField($xpath);
+
+        if ($field instanceof ChoiceFormField) {
+            if (!\is_string($value) && $field->getType() === 'radio') {
+                throw new DriverException('Only string values can be used for a radio input.');
+            }
+
+            if (\is_bool($value) && $field->getType() === 'select') {
+                throw new DriverException('Boolean values cannot be used for a select element.');
+            }
+
+            $field->setValue($value);
+            return;
+        }
+
+        if (!\is_string($value) && null !== $value) {
+            throw new DriverException('Textual and file form fields don\'t support array or boolean values');
+        }
+
+        $field->setValue($value);
     }
 
     /**
@@ -554,6 +587,7 @@ class BrowserKitDriver extends CoreDriver
      * @return FormField
      *
      * @throws DriverException
+     * @throws \InvalidArgumentException when the field does not exist in the BrowserKit form
      */
     protected function getFormField($xpath)
     {
@@ -568,7 +602,11 @@ class BrowserKitDriver extends CoreDriver
         }
 
         if (is_array($this->forms[$formId][$fieldName])) {
-            return $this->forms[$formId][$fieldName][$this->getFieldPosition($fieldNode)];
+            $positionField = $this->forms[$formId][$fieldName][$this->getFieldPosition($fieldNode)];
+
+            \assert($positionField instanceof FormField);
+
+            return $positionField;
         }
 
         return $this->forms[$formId][$fieldName];
@@ -605,6 +643,7 @@ class BrowserKitDriver extends CoreDriver
     {
         if ($element->hasAttribute('form')) {
             $formId = $element->getAttribute('form');
+            \assert($element->ownerDocument !== null);
             $formNode = $element->ownerDocument->getElementById($formId);
 
             if (null === $formNode || 'form' !== $formNode->nodeName) {
@@ -623,6 +662,8 @@ class BrowserKitDriver extends CoreDriver
             }
         } while ('form' !== $formNode->nodeName);
 
+        \assert($formNode instanceof \DOMElement);
+
         return $formNode;
     }
 
@@ -633,11 +674,9 @@ class BrowserKitDriver extends CoreDriver
      * When multiple fields have the same name (checkboxes for instance), it will return
      * an array of elements in the order they appear in the DOM.
      *
-     * @param \DOMElement $fieldNode
-     *
-     * @return integer
+     * @throws DriverException
      */
-    private function getFieldPosition(\DOMElement $fieldNode)
+    private function getFieldPosition(\DOMElement $fieldNode): int
     {
         $elements = $this->getCrawler()->filterXPath('//*[@name=\''.$fieldNode->getAttribute('name').'\']');
 
@@ -655,7 +694,7 @@ class BrowserKitDriver extends CoreDriver
         return 0;
     }
 
-    private function submit(Form $form)
+    private function submit(Form $form): void
     {
         $formId = $this->getFormNodeId($form->getFormNode());
 
@@ -675,21 +714,14 @@ class BrowserKitDriver extends CoreDriver
         $this->forms = array();
     }
 
-    private function resetForm(\DOMElement $fieldNode)
+    private function resetForm(\DOMElement $fieldNode): void
     {
         $formNode = $this->getFormNode($fieldNode);
         $formId = $this->getFormNodeId($formNode);
         unset($this->forms[$formId]);
     }
 
-    /**
-     * Determines if a node can submit a form.
-     *
-     * @param \DOMElement $node Node.
-     *
-     * @return boolean
-     */
-    private function canSubmitForm(\DOMElement $node)
+    private function canSubmitForm(\DOMElement $node): bool
     {
         $type = $node->hasAttribute('type') ? $node->getAttribute('type') : null;
 
@@ -700,14 +732,7 @@ class BrowserKitDriver extends CoreDriver
         return 'button' === $node->nodeName && (null === $type || 'submit' === $type);
     }
 
-    /**
-     * Determines if a node can reset a form.
-     *
-     * @param \DOMElement $node Node.
-     *
-     * @return boolean
-     */
-    private function canResetForm(\DOMElement $node)
+    private function canResetForm(\DOMElement $node): bool
     {
         $type = $node->hasAttribute('type') ? $node->getAttribute('type') : null;
 
@@ -754,7 +779,7 @@ class BrowserKitDriver extends CoreDriver
      * @param Form $to   merging target
      * @param Form $from merging source
      */
-    private function mergeForms(Form $to, Form $from)
+    private function mergeForms(Form $to, Form $from): void
     {
         foreach ($from->all() as $name => $field) {
             $fieldReflection = new \ReflectionObject($field);
@@ -768,7 +793,11 @@ class BrowserKitDriver extends CoreDriver
                 in_array($nodeReflection->getValue($field)->getAttribute('type'), array('submit', 'button', 'image'), true);
 
             if (!$isIgnoredField) {
-                $valueReflection->setValue($to[$name], $valueReflection->getValue($field));
+                $targetField = $to[$name];
+
+                \assert($targetField instanceof FormField);
+
+                $valueReflection->setValue($targetField, $valueReflection->getValue($field));
             }
         }
     }
@@ -776,17 +805,15 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Returns DOMElement from crawler instance.
      *
-     * @param Crawler $crawler
-     *
-     * @return \DOMElement
-     *
      * @throws DriverException when the node does not exist
      */
-    private function getCrawlerNode(Crawler $crawler)
+    private function getCrawlerNode(Crawler $crawler): \DOMElement
     {
         $node = $crawler->getNode(0);
 
         if (null !== $node) {
+            \assert($node instanceof \DOMElement);
+
             return $node;
         }
 

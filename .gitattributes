@@ -1,6 +1,8 @@
+/.editorconfig export-ignore
 /.gitattributes export-ignore
 /.github export-ignore
 /.gitignore export-ignore
 /phpunit.xml.dist export-ignore
 /phpunit.http_client.xml export-ignore
+/phpstan*.neon export-ignore
 /tests export-ignore

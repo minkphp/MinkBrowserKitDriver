@@ -20,7 +20,7 @@ class ErrorHandlingTest extends TestCase
     /**
      * @before
      */
-    protected function prepareClient()
+    protected function prepareClient(): void
     {
         $this->client = new TestClient();
     }
@@ -154,7 +154,7 @@ HTML;
         $driver->click('//div');
     }
 
-    private function getDriver()
+    private function getDriver(): BrowserKitDriver
     {
         return new BrowserKitDriver($this->client);
     }
@@ -162,19 +162,19 @@ HTML;
 
 class TestClient extends AbstractBrowser
 {
+    /**
+     * @var Response|null
+     */
     protected $nextResponse = null;
-    protected $nextScript = null;
 
-    public function setNextResponse(Response $response)
+    public function setNextResponse(Response $response): void
     {
         $this->nextResponse = $response;
     }
 
-    public function setNextScript($script)
-    {
-        $this->nextScript = $script;
-    }
-
+    /**
+     * @param object $request
+     */
     protected function doRequest($request): object
     {
         if (null === $this->nextResponse) {

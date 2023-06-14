@@ -1,0 +1,12 @@
+parameters:
+    level: 8
+    paths:
+        - src
+        - tests
+    checkMissingIterableValueType: false
+    ignoreErrors:
+        - '#^Method Behat\\Mink\\Tests\\Driver\\Custom\\[^:]+Test(Case)?\:\:test\w*\(\) has no return type specified\.$#'
+
+includes:
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/phpstan/phpstan-phpunit/rules.neon

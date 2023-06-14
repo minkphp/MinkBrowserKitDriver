@@ -7,6 +7,13 @@ use Behat\Mink\Tests\Driver\Basic\ScreenshotTest;
 
 abstract class AbstractBrowserKitConfig extends AbstractConfig
 {
+    final public function __construct()
+    {
+    }
+
+    /**
+     * @return static
+     */
     public static function getInstance()
     {
         return new static();
@@ -25,7 +32,7 @@ abstract class AbstractBrowserKitConfig extends AbstractConfig
         return parent::skipMessage($testCase, $test);
     }
 
-    protected function supportsJs()
+    protected function supportsJs(): bool
     {
         return false;
     }

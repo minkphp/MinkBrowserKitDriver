@@ -17,7 +17,7 @@
     "require": {
         "php": ">=7.2",
         "ext-dom": "*",
-        "behat/mink": "^1.9.0@dev",
+        "behat/mink": "^1.11.0@dev",
         "symfony/browser-kit": "^4.4 || ^5.0 || ^6.0",
         "symfony/dom-crawler": "^4.4 || ^5.0 || ^6.0"
     },

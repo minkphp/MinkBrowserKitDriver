@@ -423,7 +423,7 @@ class BrowserKitDriver extends CoreDriver
             return;
         }
 
-        if (!\is_string($value) && null !== $value) {
+        if (\is_array($value) || \is_bool($value)) {
             throw new DriverException('Textual and file form fields don\'t support array or boolean values');
         }
 

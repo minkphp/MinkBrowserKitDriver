@@ -424,7 +424,7 @@ class BrowserKitDriver extends CoreDriver
         }
 
         if (\is_array($value) || \is_bool($value)) {
-            throw new DriverException('Textual and file form fields don\'t support array or boolean values');
+            throw new DriverException('Textual and file form fields don\'t support array or boolean values.');
         }
 
         $field->setValue($value);
@@ -592,6 +592,12 @@ class BrowserKitDriver extends CoreDriver
     protected function getFormField(string $xpath)
     {
         $fieldNode = $this->getCrawlerNode($this->getFilteredCrawler($xpath));
+        $fieldType = $fieldNode->getAttribute('type');
+
+        if (\in_array($fieldType, ['button', 'submit', 'image'], true)) {
+            throw new DriverException(sprintf('Cannot access a form field of type "%s".', $fieldType));
+        }
+
         $fieldName = str_replace('[]', '', $fieldNode->getAttribute('name'));
 
         $formNode = $this->getFormNode($fieldNode);

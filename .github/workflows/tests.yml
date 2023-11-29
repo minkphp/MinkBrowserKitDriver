@@ -18,7 +18,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           coverage: none
-          php-version: '8.2'
+          php-version: '8.3'
       - run: composer validate --strict --no-check-lock
 
   static_analysis:

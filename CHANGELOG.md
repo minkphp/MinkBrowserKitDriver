@@ -1,3 +1,17 @@
+2.2.0 / 2023-12-09
+==================
+
+New features:
+
+* Added support for Symfony 7.
+* Added types for method parameters
+* Improve the handling of invalid values passed to `setValue`
+
+Testsuite:
+
+* Added CI jobs running on PHP 8.2 and 8.3
+* Added static analysis with phpstan
+
 2.1.0 / 2022-03-28
 ==================
 

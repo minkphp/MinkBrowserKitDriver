@@ -95,14 +95,22 @@ jobs:
       - name: Run tests
         if: "${{ matrix.implementation == 'http_kernel'}}"
         run: |
-          vendor/bin/phpunit -v --coverage-clover=coverage.clover
+          vendor/bin/phpunit -v --coverage-clover=coverage.clover --log-junit junit.xml
 
       - name: Run tests
         if: "${{ matrix.implementation == 'http_client'}}"
         run: |
-          vendor/bin/phpunit -c phpunit.http_client.xml -v --coverage-clover=coverage.clover
+          vendor/bin/phpunit -c phpunit.http_client.xml -v --coverage-clover=coverage.clover --log-junit junit.xml
 
-      - name: Upload code coverage
-        uses: codecov/codecov-action@v3
+      - name: Upload coverage to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.clover
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

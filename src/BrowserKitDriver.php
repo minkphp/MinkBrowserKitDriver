@@ -334,9 +334,7 @@ class BrowserKitDriver extends CoreDriver
      */
     public function getText(string $xpath)
     {
-        $text = $this->getFilteredCrawler($xpath)->text(null, true);
-
-        return $text;
+        return str_replace("\xc2\xa0", ' ', $this->getFilteredCrawler($xpath)->text(null, true));
     }
 
     /**

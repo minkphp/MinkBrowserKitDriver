@@ -28,11 +28,14 @@ use Symfony\Component\HttpKernel\HttpKernelBrowser;
  * Symfony BrowserKit driver.
  *
  * @author Konstantin Kudryashov <ever.zet@gmail.com>
+ *
+ * @template TRequest of object
+ * @template TResponse of object
  */
 class BrowserKitDriver extends CoreDriver
 {
     /**
-     * @var AbstractBrowser
+     * @var AbstractBrowser<TRequest, TResponse>
      */
     private $client;
 
@@ -52,7 +55,8 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Initializes BrowserKit driver.
      *
-     * @param string|null $baseUrl Base URL for HttpKernel clients
+     * @param AbstractBrowser<TRequest, TResponse> $client
+     * @param string|null                          $baseUrl Base URL for HttpKernel clients
      */
     public function __construct(AbstractBrowser $client, ?string $baseUrl = null)
     {
@@ -71,7 +75,7 @@ class BrowserKitDriver extends CoreDriver
     /**
      * Returns BrowserKit browser instance.
      *
-     * @return AbstractBrowser
+     * @return AbstractBrowser<TRequest, TResponse>
      */
     public function getClient()
     {

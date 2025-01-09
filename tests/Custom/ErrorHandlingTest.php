@@ -154,12 +154,18 @@ HTML;
         $driver->click('//div');
     }
 
+    /**
+     * @return BrowserKitDriver<object, Response>
+     */
     private function getDriver(): BrowserKitDriver
     {
         return new BrowserKitDriver($this->client);
     }
 }
 
+/**
+ * @template-extends AbstractBrowser<object, Response>
+ */
 class TestClient extends AbstractBrowser
 {
     /**

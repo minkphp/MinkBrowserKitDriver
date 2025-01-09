@@ -413,6 +413,10 @@ class BrowserKitDriver extends CoreDriver
                 throw new DriverException('Only string values can be used for a radio input.');
             }
 
+            if (!\is_bool($value) && $field->getType() === 'checkbox') {
+                throw new DriverException('Only boolean values can be used for a checkbox input.');
+            }
+
             if (\is_bool($value) && $field->getType() === 'select') {
                 throw new DriverException('Boolean values cannot be used for a select element.');
             }

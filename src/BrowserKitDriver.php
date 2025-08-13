@@ -798,8 +798,10 @@ class BrowserKitDriver extends CoreDriver
             $nodeReflection  = $fieldReflection->getProperty('node');
             $valueReflection = $fieldReflection->getProperty('value');
 
-            $nodeReflection->setAccessible(true);
-            $valueReflection->setAccessible(true);
+            if (PHP_VERSION_ID < 80100) {
+                $nodeReflection->setAccessible(true);
+                $valueReflection->setAccessible(true);
+            }
 
             $isIgnoredField = $field instanceof InputFormField &&
                 in_array($nodeReflection->getValue($field)->getAttribute('type'), array('submit', 'button', 'image'), true);
